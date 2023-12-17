@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_laravel/screens/Dashboard/location.dart';
+import 'package:flutter_laravel/screens/Dashboard/pm10meter.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../services/auth.dart';
@@ -8,16 +9,16 @@ import '../details.dart';
 import '../drawer.dart';
 import 'package:intl/intl.dart';
 
+import 'dashboard.dart';
 import 'history_container.dart';
 import 'meter.dart';
-import 'pm10tab.dart';
 
-class Dashboard extends StatefulWidget {
+class PM10Tab extends StatefulWidget {
   @override
-  _DashboardState createState() => _DashboardState();
+  _PM10TabState createState() => _PM10TabState();
 }
 
-class _DashboardState extends State<Dashboard> {
+class _PM10TabState extends State<PM10Tab> {
   final storage = FlutterSecureStorage();
   late bool isLoading = true;
 
@@ -37,21 +38,17 @@ class _DashboardState extends State<Dashboard> {
     // Handle navigation based on the selected index.
     switch (index) {
       case 0:
-      // Handle Home tab
+      // Redirect to the Dashboard
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => Dashboard()),
+        );
         break;
       case 1:
       // Handle Location tab
-        Navigator.push(
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => LocationTab()), // Replace PM10Tab() with your actual page or screen for pm10 data.
-        );
-        break;
-        break;
-      case 2:
-      // Handle new tab for pm10 data
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PM10Tab()), // Replace PM10Tab() with your actual page or screen for pm10 data.
+          MaterialPageRoute(builder: (context) => LocationTab()),
         );
         break;
     }
@@ -237,16 +234,17 @@ class _DashboardState extends State<Dashboard> {
                             ),
                           ),
                           subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment:
+                            CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
                                   Expanded(
-                                    child: RadialGaugeWidget(
+                                    child: RadialGaugeWidget1(
                                       pmValue:
-                                      getPM25(filteredData.indexOf(item)),
+                                      getPM10(filteredData.indexOf(item)),
                                       pmRemarks:
-                                      getpm25Remarks(filteredData.indexOf(item)),
+                                      getpm10Remarks(filteredData.indexOf(item)),
                                     ),
                                   ),
                                 ],
@@ -263,16 +261,16 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                               ),
                               Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    // Navigate to the DetailsPage class when the "Details" button is tapped.
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => DetailsPage(filteredData: [latestData])), // Replace DetailsPage() with your actual DetailsPage class constructor.
-                                    );
-                                  },
-                                  child: const Text('Show Details'),
-                                ),
+                                  child: TextButton(
+                                    onPressed: () {
+                                      // Navigate to the DetailsPage class when the "Details" button is tapped.
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => DetailsPage(filteredData: [latestData])),
+                                      );
+                                    },
+                                    child: const Text('Show Details'),
+                                  )
                               ),
                             ],
                           ),
@@ -289,7 +287,7 @@ class _DashboardState extends State<Dashboard> {
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.air),
+            icon: Icon(Icons.air_rounded),
             label: 'PM2.5',
           ),
           BottomNavigationBarItem(
@@ -297,12 +295,13 @@ class _DashboardState extends State<Dashboard> {
             label: 'Location',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.cloud),
+            icon: Icon(Icons.cloud,
+              color: Colors.white,),
             label: 'PM10',
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
+        selectedItemColor: Colors.green[900],
         onTap: _onItemTapped,
         backgroundColor: Colors.green[600],
       ),

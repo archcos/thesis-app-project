@@ -7,10 +7,12 @@ class HistoryContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    List<Map<String, dynamic>> latest24Records = pmData.sublist(0, 24);
+
     return Container(
       constraints: BoxConstraints(
-        maxHeight: 280, // Adjust the maxHeight as needed
-        maxWidth: 300, // Adjust the maxWidth as needed
+        maxHeight: 280,
+        maxWidth: 300,
       ),
       decoration: BoxDecoration(
         color: Colors.green[700],
@@ -30,61 +32,146 @@ class HistoryContainer extends StatelessWidget {
               fontWeight: FontWeight.bold,
             ),
           ),
-
           SizedBox(height: 8),
-          for (var pmEntry in pmData)
-            Container(
-              margin: EdgeInsets.symmetric(vertical: 5), // Add spacing between boxes
-              padding: EdgeInsets.all(10), // Add padding to the box content
-              decoration: BoxDecoration(
-                color: Colors.green[700], // Background color of the box
-                borderRadius: BorderRadius.circular(2), // Adjust the border radius as needed
-              ),
-              child: ListTile(
-                subtitle: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      '${pmEntry['timestamp']}',
-                      style: TextStyle(
-                        color: Colors.white, // Text color
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Container(
-                      width: 40, // Adjust the width as needed
-                      height: 40, // Adjust the height as needed
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        color: Colors.white, // Background color of the circle
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${pmEntry['pm25']}',
-                          style: TextStyle(
-                            color: Colors.black, // Text color
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                          ),
+          Container(
+            padding: EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              color: Colors.green[700],
+              borderRadius: BorderRadius.circular(2),
+            ),
+            child: ListTile(
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Date',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
-                    Text(
-                      '${pmEntry['pm25remarks']}\t\t\t\t\t\t\t\t\t\t\t',
-                      style: TextStyle(
-                        color: Colors.white, // Text color
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: Text(
+                        'Particulate Matter',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  SizedBox(width: 8),
+                  Expanded(
+                    child: Align(
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        'Remarks',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 15,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
               ),
-
             ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: latest24Records.length,
+              itemBuilder: (BuildContext context, int index) {
+                var pmEntry = latest24Records[index];
+                return Container(
+                  margin: EdgeInsets.symmetric(vertical: 5),
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.green[700],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                  child: ListTile(
+                    subtitle: Row(
+                      children: [
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text(
+                              '${pmEntry['timestamp']}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Container(
+                              width: 40,
+                              height: 40,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                              ),
+                              child: Center(
+                                child: Text(
+                                  '${pmEntry['pm25']}',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Align(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              '${pmEntry['pm25remarks']}',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
     );
   }
+}
+
+void main() {
+  runApp(
+    MaterialApp(
+      home: Scaffold(
+        body: HistoryContainer(pmData: []),
+      ),
+    ),
+  );
 }

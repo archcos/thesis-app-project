@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import '../details.dart';
-
-class RadialGaugeWidget extends StatelessWidget {
+class RadialGaugeWidget1 extends StatelessWidget {
   final double pmValue;
   final String pmRemarks;
 
-
-  RadialGaugeWidget({required this.pmValue, required this.pmRemarks});
+  RadialGaugeWidget1({required this.pmValue, required this.pmRemarks});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +24,7 @@ class RadialGaugeWidget extends StatelessWidget {
               axes: <RadialAxis>[
                 RadialAxis(
                   minimum: 0,
-                  maximum: 100,
+                  maximum: 500, // Adjust the maximum value based on your needs
                   startAngle: 173,
                   endAngle: 8,
                   showLabels: false,
@@ -54,32 +51,32 @@ class RadialGaugeWidget extends StatelessWidget {
                   ranges: <GaugeRange>[
                     GaugeRange(
                       startValue: 0,
-                      endValue: 25,
+                      endValue: 50,
                       color: Colors.green,
                     ),
                     GaugeRange(
-                      startValue: 25.1,
-                      endValue: 35,
+                      startValue: 50.1,
+                      endValue: 100,
                       color: Colors.yellow,
                     ),
                     GaugeRange(
-                      startValue: 35.1,
-                      endValue: 45,
+                      startValue: 100.1,
+                      endValue: 150,
                       color: Colors.orange,
                     ),
                     GaugeRange(
-                      startValue: 45.1,
-                      endValue: 55,
+                      startValue: 150.1,
+                      endValue: 200,
                       color: Colors.red,
                     ),
                     GaugeRange(
-                      startValue: 55.1,
-                      endValue: 90,
+                      startValue: 200.1,
+                      endValue: 300,
                       color: Colors.purple,
                     ),
                     GaugeRange(
-                      startValue: 91,
-                      endValue: 100,
+                      startValue: 300.1,
+                      endValue: 500,
                       color: Color(0xFF934B50),
                     ),
                   ],
