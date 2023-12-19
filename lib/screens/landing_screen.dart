@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'Dashboard/dashboard.dart'; // Import the Dashboard class or update the import path accordingly
+import 'package:permission_handler/permission_handler.dart';
+import 'Dashboard/dashboard.dart';
 
 class LandingPage extends StatelessWidget {
   @override
@@ -9,7 +10,7 @@ class LandingPage extends StatelessWidget {
         children: [
           // Background Image
           Image.asset(
-            'assets/bg.jpg', // Replace with the path to your background image
+            'assets/bg.jpg',
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,
@@ -61,6 +62,9 @@ class LandingPage extends StatelessWidget {
                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
+                        // Request notification permissions with the current context
+                        _requestNotificationPermissions(context);
+
                         // Navigate to the Dashboard class
                         Navigator.of(context).push(
                           MaterialPageRoute(
@@ -83,7 +87,7 @@ class LandingPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 90), // Add this SizedBox
+                    SizedBox(height: 90),
                     Container(
                       decoration: BoxDecoration(
                         color: Colors.transparent,
@@ -102,7 +106,7 @@ class LandingPage extends StatelessWidget {
                           children: <TextSpan>[
                             TextSpan(text: 'Developed By\n'),
                             TextSpan(
-                              text: 'BreAzy', // Make "BreAzy" bold
+                              text: 'BreAzy',
                               style: TextStyle(
                                 fontWeight: FontWeight.bold,
                               ),
@@ -119,5 +123,57 @@ class LandingPage extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  // Function to request notification permissions
+  void _requestNotificationPermissions(BuildContext context) async {
+    PermissionStatus status = await Permission.notification.request();
+
+    if (status.isGranted) {
+      // Notification permissions granted
+    } else {
+      // Handle the case where the user denies permission
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text('Notification Permission Denied'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'You have denied notification permissions. You can change this in the app settings anytime to receive notifications and warnings.',
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the current dialog
+                        _openAppSettings(); // Open app settings
+                      },
+                      child: Text('Open App Settings'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the current dialog
+                        // Handle "Maybe Later" action here
+                      },
+                      child: Text('Maybe Later'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+  }
+
+  // Function to open app settings
+  void _openAppSettings() {
+    openAppSettings();
   }
 }

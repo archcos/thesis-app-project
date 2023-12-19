@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import '../details.dart';
-
 class RadialGaugeWidget extends StatelessWidget {
   final double pmValue;
   final String pmRemarks;

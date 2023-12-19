@@ -5,9 +5,7 @@ import '../circular.dart';
 import '../details.dart';
 import 'dashboard.dart';
 import 'pm10tab.dart';
-import 'package:intl/intl.dart';
 
-// Create a new widget for the clickable location card
 class LocationCard extends StatelessWidget {
   final String location;
   final List<Map<String, dynamic>> locationData;
@@ -18,43 +16,40 @@ class LocationCard extends StatelessWidget {
   Widget build(BuildContext context) {
     Map<String, dynamic> latestData = locationData.first;
 
-    return Card(
-      elevation: 0,
-      color: Colors.green[600], // Set the background color to green
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Make it a bit oval
-      ),
-      child: InkWell(
-        onTap: () {
-          // Handle location card click
-          // For example, navigate to a new page with location details
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => DetailsPage(filteredData: locationData),
-            ),
-          );
-        },
-        child: ListTile(
-          title: Container(
-            color: Colors.transparent,
-            child: Padding(
-              padding: EdgeInsets.all(8.0),
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      '$location', // Display the location name
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Card(
+        elevation: 5,
+        color: Colors.green[600],
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15.0),
+        ),
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => DetailsPage(filteredData: locationData),
               ),
+            );
+          },
+          child: Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(12.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(height: 8),
+                Text(
+                  '$location',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -182,35 +177,16 @@ class _LocationTabState extends State<LocationTab> {
             child: Center(
               child: isLoading
                   ? CircularProgressIndicator()
-                  : Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
-                      'Location',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: locationGroupedData.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        String location = locationGroupedData.keys.elementAt(index);
-                        List<Map<String, dynamic>> locationData =
-                        locationGroupedData[location]!;
+                  : Center(
+                child: ListView.builder(
+                  itemCount: locationGroupedData.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    String location = locationGroupedData.keys.elementAt(index);
+                    List<Map<String, dynamic>> locationData = locationGroupedData[location]!;
 
-                        return LocationCard(
-                          location: location,
-                          locationData: locationData,
-                        );
-                      },
-                    ),
-                  ),
-                ],
+                    return LocationCard(location: location, locationData: locationData);
+                  },
+                ),
               ),
             ),
           ),
