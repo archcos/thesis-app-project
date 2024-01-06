@@ -5,6 +5,7 @@ class RadialGaugeWidget1 extends StatelessWidget {
   final double pmValue;
   final String pmRemarks;
 
+
   RadialGaugeWidget1({required this.pmValue, required this.pmRemarks});
 
   @override
@@ -24,7 +25,7 @@ class RadialGaugeWidget1 extends StatelessWidget {
               axes: <RadialAxis>[
                 RadialAxis(
                   minimum: 0,
-                  maximum: 500, // Adjust the maximum value based on your needs
+                  maximum: 100,
                   startAngle: 173,
                   endAngle: 8,
                   showLabels: false,
@@ -51,32 +52,32 @@ class RadialGaugeWidget1 extends StatelessWidget {
                   ranges: <GaugeRange>[
                     GaugeRange(
                       startValue: 0,
-                      endValue: 50,
+                      endValue: 54,
                       color: Colors.green,
                     ),
                     GaugeRange(
-                      startValue: 50.1,
-                      endValue: 100,
+                      startValue: 54.1,
+                      endValue: 154,
                       color: Colors.yellow,
                     ),
                     GaugeRange(
-                      startValue: 100.1,
-                      endValue: 150,
+                      startValue: 154.1,
+                      endValue: 254,
                       color: Colors.orange,
                     ),
                     GaugeRange(
-                      startValue: 150.1,
-                      endValue: 200,
+                      startValue: 254.1,
+                      endValue: 354,
                       color: Colors.red,
                     ),
                     GaugeRange(
-                      startValue: 200.1,
-                      endValue: 300,
+                      startValue: 354.1,
+                      endValue: 424,
                       color: Colors.purple,
                     ),
                     GaugeRange(
-                      startValue: 300.1,
-                      endValue: 500,
+                      startValue: 424.1,
+                      endValue: 504,
                       color: Color(0xFF934B50),
                     ),
                   ],
@@ -97,41 +98,42 @@ class RadialGaugeWidget1 extends StatelessWidget {
             ),
             Positioned(
               top: 48,
-              right: 122,
-              child: Container(
-                width: 120,
-                height: 72,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(100),
-                    topRight: Radius.circular(100),
-                    bottomLeft: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
+              child: Center(
+                child: Container(
+                  width: 120,
+                  height: 72,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(100),
+                      topRight: Radius.circular(100),
+                      bottomLeft: Radius.circular(8),
+                      bottomRight: Radius.circular(8),
+                    ),
+                    color: Colors.white,
                   ),
-                  color: Colors.white,
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 5),
-                    Text(
-                      pmValue.toString(),
-                      style: TextStyle(
-                        fontSize: 25,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 5),
+                      Text(
+                        pmValue.toString(),
+                        style: TextStyle(
+                          fontSize: 25,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                    SizedBox(height: 5),
-                    Text(
-                      "AQI",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                      SizedBox(height: 5),
+                      Text(
+                        "AQI",
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
             ),

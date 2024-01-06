@@ -1,17 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_laravel/screens/Dashboard/location.dart';
+import 'package:flutter_laravel/screens/Dashboard/pm10_history.dart';
 import 'package:flutter_laravel/screens/Dashboard/pm10meter.dart';
+import 'package:flutter_laravel/screens/info10.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../services/auth.dart';
 import '../circular.dart';
-import '../details.dart';
-import '../drawer.dart';
 import 'package:intl/intl.dart';
-
-import 'dashboard.dart';
-import 'history_container.dart';
-import 'meter.dart';
 
 class PM10Tab extends StatefulWidget {
   @override
@@ -28,32 +22,6 @@ class _PM10TabState extends State<PM10Tab> {
   late Data auth = Data();
   late Map<String, dynamic> latestData = {};
 
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Handle navigation based on the selected index.
-    switch (index) {
-      case 0:
-      // Redirect to the Dashboard
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => Dashboard()),
-        );
-        break;
-      case 1:
-      // Handle Location tab
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => LocationTab()),
-        );
-        break;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -68,11 +36,11 @@ class _PM10TabState extends State<PM10Tab> {
         timestamps = pmData.map((item) => item['timestamp'] as String).toList();
         isLoading = false;
 
-        // Sort data by timestamp in descending order
+        // Sort data by id in descending order
         pmData.sort((a, b) {
-          final timestampA = DateTime.parse(a['timestamp']);
-          final timestampB = DateTime.parse(b['timestamp']);
-          return timestampB.compareTo(timestampA);
+          final idA = int.parse(a['id'].toString());
+          final idB = int.parse(b['id'].toString());
+          return idB.compareTo(idA);
         });
 
         // Set latest data
@@ -138,22 +106,10 @@ class _PM10TabState extends State<PM10Tab> {
   @override
   Widget build(BuildContext context) {
     // Ensure that latestData is not null before using its properties
-    final List<Map<String, dynamic>> filteredData = [if (latestData != null) latestData];
+    final List<Map<String, dynamic>> filteredData = [latestData];
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          'AQMS',
-          style: TextStyle(
-            fontFamily: 'Bulleto Killa', // Replace 'YourCursiveFont' with the actual cursive font you want to use
-            fontStyle: FontStyle.italic, // This sets the italic style
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
       body: Stack(
         children: [
           Center(
@@ -185,7 +141,7 @@ class _PM10TabState extends State<PM10Tab> {
                             topRight: Radius.circular(10.0),
                           ),
                         ),
-                        child: HistoryContainer(pmData: pmData),
+                        child: PM10History(pmData: pmData),
                       );
                     } else {
                       // Display existing cards
@@ -234,8 +190,7 @@ class _PM10TabState extends State<PM10Tab> {
                             ),
                           ),
                           subtitle: Column(
-                            crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
                                 children: [
@@ -261,16 +216,16 @@ class _PM10TabState extends State<PM10Tab> {
                                 ),
                               ),
                               Center(
-                                  child: TextButton(
-                                    onPressed: () {
-                                      // Navigate to the DetailsPage class when the "Details" button is tapped.
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(builder: (context) => DetailsPage(filteredData: [latestData])),
-                                      );
-                                    },
-                                    child: const Text('Show Details'),
-                                  )
+                                child: TextButton(
+                                  onPressed: () {
+                                    // Navigate to the DetailsPage class when the "Details" button is tapped.
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => Info10Page(filteredData: [latestData])), // Replace DetailsPage() with your actual DetailsPage class constructor.
+                                    );
+                                  },
+                                  child: const Text('Show Details'),
+                                ),
                               ),
                             ],
                           ),
@@ -283,27 +238,6 @@ class _PM10TabState extends State<PM10Tab> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.air_rounded),
-            label: 'PM2.5',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on),
-            label: 'Location',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cloud,
-              color: Colors.white,),
-            label: 'PM10',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green[900],
-        onTap: _onItemTapped,
-        backgroundColor: Colors.green[600],
       ),
     );
   }

@@ -22,7 +22,8 @@ dependencies:
   http: ^1.1.0
   path: ^1.8.2
   flutter_local_notifications: ^6.0.0
-  permission_handler: ^11.1.0
+  permission_handler: ^10.0.0
+  timer_builder: ^2.0.0
 
 dev_dependencies:
   flutter_test:
@@ -42,6 +43,8 @@ flutter:
     - assets/logo1.png
     - assets/aqms.png
     - assets/bg.jpg
+    - assets/index.jpg
+    - assets/index1.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

@@ -134,8 +134,9 @@ class _DetailsPageState extends State<DetailsPage>
         onPressed: () {
           Navigator.pop(context);
         },
-        child: const Icon(Icons.exit_to_app_outlined),
-        backgroundColor: Colors.redAccent,
+        child: const Icon(Icons.keyboard_return_rounded,
+        color: Colors.redAccent),
+        backgroundColor: Colors.white,
       ),
     );
   }

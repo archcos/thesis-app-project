@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_laravel/screens/Dashboard/location.dart';
+import 'package:flutter_laravel/screens/info25.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../services/auth.dart';
 import '../circular.dart';
-import '../details.dart';
-import '../drawer.dart';
 import 'package:intl/intl.dart';
 
 import 'history_container.dart';
 import 'meter.dart';
 import 'pm10tab.dart';
-
 class Dashboard extends StatefulWidget {
   @override
   _DashboardState createState() => _DashboardState();
@@ -20,7 +17,7 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   final storage = FlutterSecureStorage();
   late bool isLoading = true;
-
+  late PageController _pageController;
   late List<Map<String, dynamic>> pmData = [];
   late List<String> timestamps = [];
   late String selectedLocation = '';
@@ -29,38 +26,33 @@ class _DashboardState extends State<Dashboard> {
 
   int _selectedIndex = 0;
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    // Handle navigation based on the selected index.
-    switch (index) {
-      case 0:
-      // Handle Home tab
-        break;
-      case 1:
-      // Handle Location tab
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => LocationTab()), // Replace PM10Tab() with your actual page or screen for pm10 data.
-        );
-        break;
-        break;
-      case 2:
-      // Handle new tab for pm10 data
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => PM10Tab()), // Replace PM10Tab() with your actual page or screen for pm10 data.
-        );
-        break;
-    }
-  }
-
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(initialPage: _selectedIndex);
     _fetchPMData();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    if (_selectedIndex != index) {
+      _pageController.animateToPage(
+        index,
+        duration: Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
+  void _onPageChanged(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   void _fetchPMData() async {
@@ -71,11 +63,11 @@ class _DashboardState extends State<Dashboard> {
         timestamps = pmData.map((item) => item['timestamp'] as String).toList();
         isLoading = false;
 
-        // Sort data by timestamp in descending order
+        // Sort data by id in descending order
         pmData.sort((a, b) {
-          final timestampA = DateTime.parse(a['timestamp']);
-          final timestampB = DateTime.parse(b['timestamp']);
-          return timestampB.compareTo(timestampA);
+          final idA = int.parse(a['id'].toString());
+          final idB = int.parse(b['id'].toString());
+          return idB.compareTo(idA);
         });
 
         // Set latest data
@@ -141,7 +133,9 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     // Ensure that latestData is not null before using its properties
-    final List<Map<String, dynamic>> filteredData = [if (latestData != null) latestData];
+    final List<Map<String, dynamic>> filteredData = [
+       latestData
+    ];
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -149,141 +143,154 @@ class _DashboardState extends State<Dashboard> {
         title: Text(
           'AQMS',
           style: TextStyle(
-            fontFamily: 'Bulleto Killa', // Replace 'YourCursiveFont' with the actual cursive font you want to use
-            fontStyle: FontStyle.italic, // This sets the italic style
+            fontFamily: 'Bulleto Killa',
+            fontStyle: FontStyle.italic,
           ),
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
-      body: Stack(
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: _onPageChanged,
         children: [
-          Center(
-            child: CircularProgressWithDuration(duration: Duration(seconds: 5)),
-          ),
-          Image.asset(
-            'assets/bg.jpg',
-            fit: BoxFit.cover,
-            width: double.infinity,
-            height: double.infinity,
-          ),
-          Container(
-            color: Colors.transparent,
-            child: Center(
-              child: isLoading
-                  ? CircularProgressIndicator()
-                  : Center(
-                child: ListView.builder(
-                  itemCount: filteredData.length + 1,
-                  itemBuilder: (BuildContext context, int index) {
-                    if (index == filteredData.length) {
-                      // Display additional card for all PM2.5 data
-                      return Card(
-                        elevation: 0,
-                        color: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(10.0),
-                            topRight: Radius.circular(10.0),
-                          ),
-                        ),
-                        child: HistoryContainer(pmData: pmData),
-                      );
-                    } else {
-                      // Display existing cards
-                      final item = filteredData[index];
-                      String timestamp = item['timestamp'] as String;
-                      String formattedTimestamp =
-                      formatTimestamp(timestamp);
-                      String location = item['location'] as String;
-
-                      return Card(
-                        elevation: 0,
-                        color: Colors.transparent,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0.0),
-                        ),
-                        child: ListTile(
-                          title: Container(
+          // Home Tab
+          Stack(
+            children: [
+              Center(
+                child: CircularProgressWithDuration(
+                    duration: Duration(seconds: 5)),
+              ),
+              Image.asset(
+                'assets/bg.jpg',
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: double.infinity,
+              ),
+              Container(
+                color: Colors.transparent,
+                child: Center(
+                  child: isLoading
+                      ? CircularProgressIndicator()
+                      : Center(
+                    child: ListView.builder(
+                      itemCount: filteredData.length + 1,
+                      itemBuilder: (BuildContext context, int index) {
+                        if (index == filteredData.length) {
+                          return Card(
+                            elevation: 0,
                             color: Colors.transparent,
-                            child: Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      'Current Air Quality',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(height: 8),
-                                    Text(
-                                      formattedTimestamp,
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.only(
+                                topLeft: Radius.circular(10.0),
+                                topRight: Radius.circular(10.0),
                               ),
                             ),
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                            child: HistoryContainer(pmData: pmData),
+                          );
+                        } else {
+                          final item = filteredData[index];
+                          String timestamp = item['timestamp'] as String;
+                          String formattedTimestamp = formatTimestamp(
+                              timestamp);
+                          String location = item['location'] as String;
+
+                          return Card(
+                            elevation: 0,
+                            color: Colors.transparent,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(0.0),
+                            ),
+                            child: ListTile(
+                              title: Container(
+                                color: Colors.transparent,
+                                child: Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Center(
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment
+                                          .center,
+                                      children: [
+                                        Text(
+                                          'Current Air Quality',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        SizedBox(height: 8),
+                                        Text(
+                                          formattedTimestamp,
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: RadialGaugeWidget(
-                                      pmValue:
-                                      getPM25(filteredData.indexOf(item)),
-                                      pmRemarks:
-                                      getpm25Remarks(filteredData.indexOf(item)),
+                                  Row(
+                                    children: [
+                                      Expanded(
+                                        child: RadialGaugeWidget(
+                                          pmValue: getPM25(
+                                              filteredData.indexOf(item)),
+                                          pmRemarks: getpm25Remarks(
+                                              filteredData.indexOf(item)),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  SizedBox(height: 8),
+                                  Center(
+                                    child: Text(
+                                      '$location',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ),
+                                  Center(
+                                    child: TextButton(
+                                      onPressed: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  Info25Page(filteredData: [
+                                                    latestData
+                                                  ])),
+                                        );
+                                      },
+                                      child: const Text('More Information'),
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 8),
-                              Center(
-                                child: Text(
-                                  '$location',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 25,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                              Center(
-                                child: TextButton(
-                                  onPressed: () {
-                                    // Navigate to the DetailsPage class when the "Details" button is tapped.
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => DetailsPage(filteredData: [latestData])), // Replace DetailsPage() with your actual DetailsPage class constructor.
-                                    );
-                                  },
-                                  child: const Text('Show Details'),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      );
-                    }
-                  },
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
                 ),
               ),
-            ),
+            ],
           ),
+          // Location Tab
+          LocationTab(),
+          // PM10 Tab
+          PM10Tab(),
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -294,7 +301,7 @@ class _DashboardState extends State<Dashboard> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_on),
-            label: 'Location',
+            label: 'Locations',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.cloud),

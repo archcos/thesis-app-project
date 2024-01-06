@@ -1,8 +1,52 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
-import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:timer_builder/timer_builder.dart';
 
 class Data with ChangeNotifier {
+  Timer? _timer;
+
+  Data() {
+    // Start the periodic timer when the class is created
+    _startTimer();
+  }
+
+  // Method to fetch data and notify listeners
+  Future<void> _fetchDataAndNotify() async {
+    try {
+      // Fetch your data here
+      List<Map<String, dynamic>> data = await fetchPMData();
+
+      // Notify listeners with the fetched data
+      notifyListeners();
+
+      // You can also perform additional processing with the fetched data
+      // For example, update other properties or call other methods
+    } catch (e) {
+      // Handle errors appropriately
+      print('Error fetching data: $e');
+    }
+  }
+
+  // Method to start the periodic timer
+  void _startTimer() {
+    // Fetch data immediately when the class is created
+    _fetchDataAndNotify();
+
+    // Set up a periodic timer to fetch data every 30 minutes
+    _timer = Timer.periodic(Duration(minutes: 30), (timer) {
+      _fetchDataAndNotify();
+    });
+  }
+
+  // Cancel the timer when the Data class is disposed
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
   Future<List<Map<String, dynamic>>> fetchPMData() async {
     try {
       String apiUrl = 'https://airqms-cdo.000webhostapp.com/getdata.php';
@@ -83,5 +127,3 @@ class Data with ChangeNotifier {
     }
   }
 }
-
-

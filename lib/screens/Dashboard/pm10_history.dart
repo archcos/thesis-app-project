@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-class HistoryContainer extends StatelessWidget {
+class PM10History extends StatelessWidget {
   final List<Map<String, dynamic>> pmData;
 
-  HistoryContainer({required this.pmData});
+  PM10History({required this.pmData});
 
   @override
   Widget build(BuildContext context) {
@@ -55,11 +55,6 @@ class HistoryContainer extends StatelessWidget {
                       ),
                     ),
                   ),
-                  VerticalDivider(
-                    color: Colors.white, // Adjust color as needed
-                    thickness: 2,
-                    width: 1,
-                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Align(
@@ -73,11 +68,6 @@ class HistoryContainer extends StatelessWidget {
                         ),
                       ),
                     ),
-                  ),
-                  VerticalDivider(
-                    color: Colors.white, // Adjust color as needed
-                    thickness: 1,
-                    width: 1,
                   ),
                   SizedBox(width: 8),
                   Expanded(
@@ -125,11 +115,6 @@ class HistoryContainer extends StatelessWidget {
                             ),
                           ),
                         ),
-                        VerticalDivider(
-                          color: Colors.white, // Adjust color as needed
-                          thickness: 1,
-                          width: 1,
-                        ),
                         SizedBox(width: 8),
                         Expanded(
                           child: Align(
@@ -143,7 +128,7 @@ class HistoryContainer extends StatelessWidget {
                               ),
                               child: Center(
                                 child: Text(
-                                  '${pmEntry['pm25']}',
+                                  '${pmEntry['pm10']}',
                                   style: TextStyle(
                                     color: Colors.black,
                                     fontSize: 15,
@@ -154,17 +139,12 @@ class HistoryContainer extends StatelessWidget {
                             ),
                           ),
                         ),
-                        VerticalDivider(
-                          color: Colors.white, // Adjust color as needed
-                          thickness: 1,
-                          width: 1,
-                        ),
                         SizedBox(width: 8),
                         Expanded(
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              '${pmEntry['pm25remarks']}',
+                              '${pmEntry['pm10remarks']}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
@@ -190,7 +170,7 @@ void main() {
   runApp(
     MaterialApp(
       home: Scaffold(
-        body: HistoryContainer(pmData: []),
+        body: PM10History(pmData: []),
       ),
     ),
   );

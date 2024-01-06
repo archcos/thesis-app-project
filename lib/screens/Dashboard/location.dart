@@ -3,8 +3,6 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/auth.dart';
 import '../circular.dart';
 import '../details.dart';
-import 'dashboard.dart';
-import 'pm10tab.dart';
 
 class LocationCard extends StatelessWidget {
   final String location;
@@ -14,7 +12,7 @@ class LocationCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> latestData = locationData.first;
+    Map<String, dynamic> latestData = locationData.isNotEmpty ? locationData.first : {};
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
@@ -22,7 +20,7 @@ class LocationCard extends StatelessWidget {
         elevation: 5,
         color: Colors.green[600],
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(15.0),
+          borderRadius: BorderRadius.circular(150.0),
         ),
         child: InkWell(
           onTap: () {
@@ -41,14 +39,68 @@ class LocationCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 SizedBox(height: 8),
+                CircleAvatar(
+                  radius: 40,
+                  backgroundColor: Colors.white,
+                  child: Center(
+                    child: Text(
+                      locationData.isNotEmpty
+                          ? (locationData.first['location'] as String).split(' ')[0]
+                          : '',
+                      style: TextStyle(
+                        color: Colors.green[600],
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(height: 8),
                 Text(
-                  '$location',
+                  'Latest Data',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
+                SizedBox(height: 8),
+                Text(
+                  'Time: ${latestData['timestamp'] ?? 'N/A'}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'PM2.5: ${latestData['pm25'] ?? 'N/A'}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Remarks: ${latestData['pm25remarks'] ?? 'N/A'}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'PM10: ${latestData['pm10'] ?? 'N/A'}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  'Remarks: ${latestData['pm10remarks'] ?? 'N/A'}',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
+                ),
+                SizedBox(height: 8),
               ],
             ),
           ),
@@ -70,35 +122,6 @@ class _LocationTabState extends State<LocationTab> {
   late List<Map<String, dynamic>> averageData = [];
   late Data auth = Data();
   late Map<String, List<Map<String, dynamic>>> locationGroupedData = {};
-
-  int _selectedIndex = 0;
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-
-    switch (index) {
-      case 0:
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Dashboard(),
-          ),
-        );
-        break;
-      case 1:
-        break;
-      case 2:
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => PM10Tab(),
-          ),
-        );
-        break;
-    }
-  }
 
   @override
   void initState() {
@@ -149,18 +172,6 @@ class _LocationTabState extends State<LocationTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(
-          'AQMS',
-          style: TextStyle(
-            fontFamily: 'Bulleto Killa',
-            fontStyle: FontStyle.italic,
-          ),
-        ),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
       body: Stack(
         children: [
           Center(
@@ -191,26 +202,6 @@ class _LocationTabState extends State<LocationTab> {
             ),
           ),
         ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.air),
-            label: 'PM2.5',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.location_on, color: Colors.white),
-            label: 'Location',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.cloud),
-            label: 'PM10',
-          ),
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.green[900],
-        onTap: _onItemTapped,
-        backgroundColor: Colors.green[600],
       ),
     );
   }
