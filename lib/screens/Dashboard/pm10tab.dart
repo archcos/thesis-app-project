@@ -168,7 +168,7 @@ class _PM10TabState extends State<PM10Tab> {
                                   MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Current Air Quality',
+                                      'Current Air Quality - PM10',
                                       style: TextStyle(
                                         color: Colors.white,
                                         fontSize: 20,
@@ -224,7 +224,7 @@ class _PM10TabState extends State<PM10Tab> {
                                       MaterialPageRoute(builder: (context) => Info10Page(filteredData: [latestData])), // Replace DetailsPage() with your actual DetailsPage class constructor.
                                     );
                                   },
-                                  child: const Text('Show Details'),
+                                  child: const Text('See More Information'),
                                 ),
                               ),
                             ],

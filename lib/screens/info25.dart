@@ -77,11 +77,13 @@ class Info25Page extends StatelessWidget {
               ),
             ),
             SizedBox(height: 5),
-            Container(
-              height: screenHeight * 1, // Adjust the multiplier as needed
-              child: Image.asset(
-                'assets/index.jpg',  // Replace 'assets/index.jpg' with the actual path of your image
-                fit: BoxFit.cover,
+            Center(
+              child: Container(
+                height: screenHeight * 0.9, // Adjust the multiplier as needed
+                child: Image.asset(
+                  'assets/index.jpg',  // Replace 'assets/index.jpg' with the actual path of your image
+                  fit: BoxFit.cover,
+                ),
               ),
             ),
             Padding(

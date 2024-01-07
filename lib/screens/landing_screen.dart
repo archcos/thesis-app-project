@@ -27,6 +27,25 @@ class LandingPage extends StatelessWidget {
                       'assets/logo1.png',
                       width: 200,
                     ),
+                    Text(
+                      'AirCheck',
+                      style: TextStyle(
+                        fontFamily: 'Bulleto Killa',
+                        fontSize: 30,
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.w900,
+                        color: Colors.white,
+                        height: 1.16,
+                        letterSpacing: 0,
+                        shadows: [
+                          Shadow(
+                            blurRadius: 5.0,
+                            color: Colors.black,
+                            offset: Offset(1.0, 1.0),
+                          ),
+                        ],
+                      ),
+                    ),
                     SizedBox(height: 40),
                     Text(
                       'Welcome!',
@@ -55,6 +74,13 @@ class LandingPage extends StatelessWidget {
                           color: Colors.white,
                           height: 1.2,
                           letterSpacing: 0,
+                          shadows: [
+                            Shadow(
+                              blurRadius: 5.0,
+                              color: Colors.black,
+                              offset: Offset(1.0, 1.0),
+                            ),
+                          ],
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -74,8 +100,8 @@ class LandingPage extends StatelessWidget {
                       },
                       child: Text('CHECK AIR QUALITY'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green[400],
-                        foregroundColor: Colors.white,
+                        backgroundColor: Color(0xFF75FA61),
+                        foregroundColor: Colors.green[900],
                         padding: EdgeInsets.symmetric(horizontal: 10, vertical: 20),
                         textStyle: TextStyle(
                           fontSize: 20,

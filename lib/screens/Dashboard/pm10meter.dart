@@ -25,7 +25,7 @@ class RadialGaugeWidget1 extends StatelessWidget {
               axes: <RadialAxis>[
                 RadialAxis(
                   minimum: 0,
-                  maximum: 100,
+                  maximum: 504,
                   startAngle: 173,
                   endAngle: 8,
                   showLabels: false,

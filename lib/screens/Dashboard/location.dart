@@ -1,26 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/auth.dart';
-import '../circular.dart';
 import '../details.dart';
+import 'package:intl/intl.dart';
 
 class LocationCard extends StatelessWidget {
   final String location;
   final List<Map<String, dynamic>> locationData;
+  final Map<String, String> remarkImages = {
+    'Good': 'assets/colors/green.png',
+    'Fair': 'assets/colors/yellow.png',
+    'Unhealthy': 'assets/colors/red.png',
+    'Very Unhealthy': 'assets/colors/orange.png',
+    'Acutely Unhealthy': 'assets/colors/purple.png',
+    'Emergency': 'assets/colors/maroon.png',
+  };
 
   LocationCard({required this.location, required this.locationData});
 
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> latestData = locationData.isNotEmpty ? locationData.first : {};
+    String pm25Remark = latestData['pm25remarks'] ?? 'N/A';
+    String backgroundImagePath = remarkImages.containsKey(pm25Remark)
+        ? remarkImages[pm25Remark]!
+        : 'assets/colors/default.png';
 
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Card(
-        elevation: 5,
-        color: Colors.green[600],
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(150.0),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(15.0),
+          image: DecorationImage(
+            image: AssetImage(backgroundImagePath),
+            fit: BoxFit.cover,
+          ),
         ),
         child: InkWell(
           onTap: () {
@@ -32,80 +46,78 @@ class LocationCard extends StatelessWidget {
             );
           },
           child: Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(height: 8),
-                CircleAvatar(
-                  radius: 40,
-                  backgroundColor: Colors.white,
-                  child: Center(
-                    child: Text(
-                      locationData.isNotEmpty
-                          ? (locationData.first['location'] as String).split(' ')[0]
-                          : '',
-                      style: TextStyle(
-                        color: Colors.green[600],
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+            height: 210,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(15.0),
+              color: Colors.transparent,
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(15.0),
+                child: Container(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(height: 8),
+                      Container(
+                        width: 80,
+                        height: 80,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: Colors.white,
+                        ),
+                        child: Center(
+                          child: Text(
+                            locationData.isNotEmpty
+                                ? (locationData.first['location'] as String).split(' ')[0]
+                                : '',
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      SizedBox(height: 8),
+                      Text(
+                        'DATE: ${latestData['timestamp'] != null ? DateFormat('yyyy-MM-dd').format(DateTime.parse(latestData['timestamp'])) : 'N/A'}',
+                        style: TextStyle(
+                          fontWeight: FontWeight.w900,
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'PM2.5: ${latestData['pm25']  ?? 'N/A '} µg/m³ -${latestData['pm25remarks'] ?? 'N/A'}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'PM10: ${latestData['pm10'] ?? 'N/A'} - µg/m³ ${latestData['pm10remarks'] ?? 'N/A'}',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 16,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'See More',
+                        style: TextStyle(
+                          color: Colors.blue,
+                          fontSize: 16,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(height: 8),
-                Text(
-                  'Latest Data',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 8),
-                Text(
-                  'Time: ${latestData['timestamp'] ?? 'N/A'}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  'PM2.5: ${latestData['pm25'] ?? 'N/A'}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  'Remarks: ${latestData['pm25remarks'] ?? 'N/A'}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  'PM10: ${latestData['pm10'] ?? 'N/A'}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                Text(
-                  'Remarks: ${latestData['pm10remarks'] ?? 'N/A'}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                  ),
-                ),
-                SizedBox(height: 8),
-              ],
+              ),
             ),
           ),
         ),
-      ),
     );
   }
 }
@@ -131,7 +143,7 @@ class _LocationTabState extends State<LocationTab> {
 
   void _fetchAverage() async {
     try {
-      final data = await auth.fetchPMData();
+      final data = await auth.fetchAverage();
       setState(() {
         averageData = List<Map<String, dynamic>>.from(data);
         isLoading = false;
@@ -174,9 +186,6 @@ class _LocationTabState extends State<LocationTab> {
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          Center(
-            child: CircularProgressWithDuration(duration: Duration(seconds: 5)),
-          ),
           Image.asset(
             'assets/bg.jpg',
             fit: BoxFit.cover,
@@ -195,7 +204,10 @@ class _LocationTabState extends State<LocationTab> {
                     String location = locationGroupedData.keys.elementAt(index);
                     List<Map<String, dynamic>> locationData = locationGroupedData[location]!;
 
-                    return LocationCard(location: location, locationData: locationData);
+                    return LocationCard(
+                        location: location,
+                        locationData: locationData,
+                    );
                   },
                 ),
               ),
