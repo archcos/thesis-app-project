@@ -28,6 +28,9 @@
             <meta-data
                 android:name="com.dexterous.flutterlocalnotifications.default_sound"
                 android:resource="@raw/notif" />
+        <meta-data
+            android:name="be.tramckrijte.workmanager.SchedulerInitializer"
+            android:value="be.tramckrijte.workmanager.plugins.ios.IosSchedulerInitializer" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
