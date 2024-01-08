@@ -2,7 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:timer_builder/timer_builder.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class Data with ChangeNotifier {
@@ -24,14 +23,12 @@ class Data with ChangeNotifier {
       // Fetch your data here
       List<Map<String, dynamic>> data = await fetchPMData();
 
-      // Fetch average data
-      List<Map<String, dynamic>> average = await fetchAverage();
 
       // Notify listeners with the fetched data
       notifyListeners();
 
       // Check criteria for sending notifications
-      _checkNotificationCriteria(data, average);
+      _checkNotificationCriteria(data);
     } catch (e) {
       // Handle errors appropriately
       print('Error fetching data: $e');
@@ -39,10 +36,9 @@ class Data with ChangeNotifier {
   }
 
   // Check criteria for sending notifications
-  void _checkNotificationCriteria(
-      List<Map<String, dynamic>> data, List<Map<String, dynamic>> average) {
+  void _checkNotificationCriteria(List<Map<String, dynamic>> data) {
     // Implement your notification criteria here
-    // For example, compare pm25 and pm10 values with thresholds
+    // For example, compare the latest pm25 and pm10 values with thresholds
 
     // For demonstration purposes, let's assume a threshold of 50 for both pm25 and pm10
     double pm25Threshold = 35.1;
@@ -50,14 +46,10 @@ class Data with ChangeNotifier {
 
     bool sendNotification = false;
 
-    // Check if any data point exceeds the threshold
-    if (data.any((item) => item['pm25'] > pm25Threshold || item['pm10'] > pm10Threshold)) {
-      sendNotification = true;
-    }
-
-    // Check average values
-    if (!sendNotification) {
-      if (average.any((item) => item['pm25_average'] > pm25Threshold || item['pm10_average'] > pm10Threshold)) {
+    // Check if the latest data point exceeds the threshold
+    if (data.isNotEmpty) {
+      Map<String, dynamic> latestData = data.last; // Assuming the latest data is the last item in the list
+      if (latestData['pm25'] > pm25Threshold || latestData['pm10'] > pm10Threshold) {
         sendNotification = true;
       }
     }
@@ -77,6 +69,7 @@ class Data with ChangeNotifier {
       importance: Importance.max,
       priority: Priority.high,
       playSound: true, // You can customize notification options here
+      sound: RawResourceAndroidNotificationSound('notif'),
       styleInformation: DefaultStyleInformation(true, true),
     );
     const NotificationDetails platformChannelSpecifics =
@@ -85,9 +78,7 @@ class Data with ChangeNotifier {
     await flutterLocalNotificationsPlugin.show(
       0,
       'Air Quality Alert',
-      'Air quality is not within the healthy range!\n'
-          'Please Wear A Mask or Avoid Going Outside\n'
-          'Check The App to See AQI Level',
+      'Air Quality is not Healthy! Check AQI Level',
       platformChannelSpecifics,
     );
   }
@@ -98,7 +89,7 @@ class Data with ChangeNotifier {
     _fetchDataAndNotify();
 
     // Set up a periodic timer to fetch data every 1 minute
-    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+    _timer = Timer.periodic(Duration(minutes: 5), (timer) {
       _fetchDataAndNotify();
     });
   }

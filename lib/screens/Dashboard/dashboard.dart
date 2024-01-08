@@ -1,15 +1,14 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:flutter_laravel/screens/Dashboard/location.dart';
-import 'package:flutter_laravel/screens/info25.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/auth.dart';
 import '../circular.dart';
-import 'package:intl/intl.dart';
-
+import '../info25.dart';
 import 'history_container.dart';
+import 'location.dart';
 import 'meter.dart';
 import 'pm10tab.dart';
+import 'package:intl/intl.dart';
 
 class Dashboard extends StatefulWidget {
   @override
@@ -145,9 +144,7 @@ class _DashboardState extends State<Dashboard> {
         automaticallyImplyLeading: false,
       ),
       body: RefreshIndicator(
-        onRefresh: () async {
-          await _fetchPMData();
-        },
+        onRefresh: _fetchPMData, // call the _fetchPMData method when refreshing
         child: PageView(
           controller: _pageController,
           children: [
@@ -191,7 +188,8 @@ class _DashboardState extends State<Dashboard> {
                             item['timestamp'] as String;
                             String formattedTimestamp =
                             formatTimestamp(timestamp);
-                            String location = item['location'] as String;
+                            String location =
+                            item['location'] as String;
 
                             return Card(
                               elevation: 0,
@@ -240,9 +238,11 @@ class _DashboardState extends State<Dashboard> {
                                         Expanded(
                                           child: RadialGaugeWidget(
                                             pmValue: getPM25(
-                                                filteredData.indexOf(item)),
+                                                filteredData.indexOf(
+                                                    item)),
                                             pmRemarks: getpm25Remarks(
-                                                filteredData.indexOf(item)),
+                                                filteredData.indexOf(
+                                                    item)),
                                           ),
                                         ),
                                       ],

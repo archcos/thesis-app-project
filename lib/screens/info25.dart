@@ -12,7 +12,7 @@ class Info25Page extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          'AQMS',
+          'AirCheck',
           style: TextStyle(
             fontFamily: 'Bulleto Killa',
             fontStyle: FontStyle.italic,
