@@ -17,26 +17,23 @@ class Data with ChangeNotifier {
     _startTimer();
   }
 
-  // Method to fetch data and notify listeners
-  Future<void> _fetchDataAndNotify() async {
+  Future<void> fetchDataAndNotifyInBackground() async {
     try {
       // Fetch your data here
       List<Map<String, dynamic>> data = await fetchPMData();
-
 
       // Notify listeners with the fetched data
       notifyListeners();
 
       // Check criteria for sending notifications
-      _checkNotificationCriteria(data);
+      checkNotificationCriteria(data);
     } catch (e) {
       // Handle errors appropriately
       print('Error fetching data: $e');
     }
   }
 
-  // Check criteria for sending notifications
-  void _checkNotificationCriteria(List<Map<String, dynamic>> data) {
+  void checkNotificationCriteria(List<Map<String, dynamic>> data) {
     // Implement your notification criteria here
     // For example, compare the latest pm25 and pm10 values with thresholds
 
@@ -56,12 +53,11 @@ class Data with ChangeNotifier {
 
     // Send notification if criteria are met
     if (sendNotification) {
-      _sendNotification();
+      sendNotifications();
     }
   }
 
-  // Send local notification
-  Future<void> _sendNotification() async {
+  Future<void> sendNotifications() async {
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
     AndroidNotificationDetails(
       'air_quality_channel', // Use a unique identifier for your channel
@@ -83,27 +79,22 @@ class Data with ChangeNotifier {
     );
   }
 
-  // Method to start the periodic timer
   void _startTimer() {
     // Fetch data immediately when the class is created
-    _fetchDataAndNotify();
+    fetchDataAndNotifyInBackground();
 
     // Set up a periodic timer to fetch data every 1 minute
-    _timer = Timer.periodic(Duration(minutes: 5), (timer) {
-      _fetchDataAndNotify();
+    _timer = Timer.periodic(Duration(minutes: 1), (timer) {
+      fetchDataAndNotifyInBackground();
     });
   }
 
-  // Cancel the timer when the Data class is disposed
   @override
   void dispose() {
     _timer?.cancel();
     super.dispose();
   }
 
-  // Initialize local notifications
-// Initialize local notifications
-// Initialize local notifications for Android
   void _initializeLocalNotifications() {
     var initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
     var initializationSettings = InitializationSettings(
@@ -111,7 +102,6 @@ class Data with ChangeNotifier {
     );
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
-
 
   Future<List<Map<String, dynamic>>> fetchPMData() async {
     try {
@@ -146,7 +136,8 @@ class Data with ChangeNotifier {
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchAverage() async {
+
+Future<List<Map<String, dynamic>>> fetchAverage() async {
     try {
       String apiUrl = 'https://airqms-cdo.000webhostapp.com/getaverage.php';
       var response = await http.get(Uri.parse(apiUrl));
