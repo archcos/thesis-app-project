@@ -4,6 +4,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/auth.dart';
 import '../circular.dart';
 import '../info25.dart';
+import 'Helper.dart';
 import 'history_container.dart';
 import 'location.dart';
 import 'meter.dart';
@@ -28,15 +29,20 @@ class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
 
   late Timer _timer;
+  bool _isMounted = false;
 
   @override
   void initState() {
     super.initState();
+    _isMounted = true;
     _pageController = PageController(initialPage: _selectedIndex);
     _fetchPMData();
+
     // Schedule the timer to fetch data every minute
     _timer = Timer.periodic(Duration(minutes: 1), (Timer timer) {
-      _fetchPMData();
+      if (_isMounted) {
+        _fetchPMData();
+      }
     });
 
     // Add listener for page changes
@@ -47,6 +53,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   void dispose() {
+    _isMounted = false;
     _pageController.dispose();
     // Cancel the timer when the widget is disposed
     _timer.cancel();
@@ -56,35 +63,39 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _fetchPMData() async {
     try {
       final data = await auth.fetchPMData();
-      setState(() {
-        pmData = List<Map<String, dynamic>>.from(data);
-        timestamps = pmData.map((item) => item['timestamp'] as String).toList();
-        isLoading = false;
 
-        // Sort data by id in descending order
-        pmData.sort((a, b) {
-          final idA = int.parse(a['id'].toString());
-          final idB = int.parse(b['id'].toString());
-          return idB.compareTo(idA);
+      if (_isMounted) {
+        setState(() {
+          pmData = List<Map<String, dynamic>>.from(data);
+          timestamps = pmData.map((item) => item['timestamp'] as String).toList();
+          isLoading = false;
+
+          // Sort data by id in descending order
+          pmData.sort((a, b) {
+            final idA = int.parse(a['id'].toString());
+            final idB = int.parse(b['id'].toString());
+            return idB.compareTo(idA);
+          });
+
+          // Set latest data
+          if (pmData.isNotEmpty) {
+            latestData = pmData.first;
+          }
         });
-
-        // Set latest data
-        if (pmData.isNotEmpty) {
-          latestData = pmData.first;
-        }
-      });
+      }
     } catch (e) {
+      if (_isMounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
       print('Error fetching PM data: $e');
-      setState(() {
-        isLoading = false;
-      });
     }
   }
 
   String formatTimestamp(String timestamp) {
     final dateTime = DateTime.parse(timestamp);
-    final formattedDate =
-    DateFormat('h a MMMM d, y', 'en_US').format(dateTime);
+    final formattedDate = DateFormat('h a MMMM d, y', 'en_US').format(dateTime);
     return formattedDate;
   }
 
@@ -109,7 +120,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _onItemTapped(int index) {
-    if (_selectedIndex != index) {
+    if (_isMounted && _selectedIndex != index) {
       _pageController.animateToPage(
         index,
         duration: Duration(milliseconds: 300),
@@ -119,9 +130,11 @@ class _DashboardState extends State<Dashboard> {
   }
 
   void _onPageChanged(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (_isMounted) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
   }
 
   @override
@@ -142,6 +155,33 @@ class _DashboardState extends State<Dashboard> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
+        actions: [
+          InkWell(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Helper(),
+                ),
+              );
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 16.0),
+              padding: EdgeInsets.all(2.0),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: Colors.white,
+                  width: 1.0,
+                ),
+              ),
+              child: Icon(
+                Icons.question_mark_rounded,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: _fetchPMData, // call the _fetchPMData method when refreshing
@@ -305,7 +345,7 @@ class _DashboardState extends State<Dashboard> {
             label: 'Locations',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.cloud),
+            icon: Icon(Icons.smoking_rooms),
             label: 'PM10',
           ),
         ],

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'Dashboard/Help.dart';
 import 'Dashboard/dashboard.dart';
 
 class LandingPage extends StatelessWidget {
@@ -153,10 +155,31 @@ class LandingPage extends StatelessWidget {
 
   // Function to request notification permissions
   void _requestNotificationPermissions(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool showHelpPage = prefs.getBool('showHelpPage') ?? true;
+
     PermissionStatus status = await Permission.notification.request();
 
     if (status.isGranted) {
       // Notification permissions granted
+      if (showHelpPage) {
+        // If the help page should be shown, navigate to it and set the flag to false
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) {
+              prefs.setBool('showHelpPage', false);
+              return Help();
+            },
+          ),
+        );
+      } else {
+        // If the help page should not be shown, navigate to the Dashboard class
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => Dashboard(),
+          ),
+        );
+      }
     } else {
       // Handle the case where the user denies permission
       showDialog(
@@ -164,34 +187,7 @@ class LandingPage extends StatelessWidget {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Notification Permission Denied'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'You have denied notification permissions. You can change this in the app settings anytime to receive notifications and warnings.',
-                ),
-                SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the current dialog
-                        _openAppSettings(); // Open app settings
-                      },
-                      child: Text('Open App Settings'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop(); // Close the current dialog
-                        // Handle "Maybe Later" action here
-                      },
-                      child: Text('Maybe Later'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
+            // ... (your existing code)
           );
         },
       );

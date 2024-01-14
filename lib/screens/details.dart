@@ -41,6 +41,9 @@ class _DetailsPageState extends State<DetailsPage>
             item['pm10'] = double.tryParse(item['pm10']?.toString() ?? '0.0') ?? 0.0;
           });
 
+          // Sort data by ID in descending order
+          data.sort((a, b) => b['id'].compareTo(a['id']));
+
           print(data);
 
           return data;
@@ -57,10 +60,13 @@ class _DetailsPageState extends State<DetailsPage>
 
   @override
   Widget build(BuildContext context) {
+    String locationName =
+    widget.filteredData.isNotEmpty ? widget.filteredData.first['location'] : 'Location';
+
     return Scaffold(
       appBar: AppBar(
         leading: Icon(Icons.history),
-        title: Text("Full History"),
+        title: Text('History: $locationName'),
         backgroundColor: Colors.lightGreen,
         foregroundColor: Colors.black,
         bottom: TabBar(
@@ -78,208 +84,217 @@ class _DetailsPageState extends State<DetailsPage>
           ],
         ),
       ),
-      body: TabBarView(
-        controller: tabController,
+      body: Stack(
         children: [
-          // Daily Average tab
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: pmData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<Map<String, dynamic>> data = snapshot.data!;
-                List<Map<String, dynamic>> filteredData = data.where((item) =>
-                    widget.filteredData.any((filteredItem) =>
-                    item['location'] == filteredItem['location']
-                    )
-                ).toList();
+        Image.asset(
+        'assets/bg.jpg',
+        fit: BoxFit.cover,
+        width: double.infinity,
+        height: double.infinity,
+      ), TabBarView(
+            controller: tabController,
+            children: [
+              // Daily Average tab
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: pmData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Map<String, dynamic>> data = snapshot.data!;
+                    List<Map<String, dynamic>> filteredData = data.where((item) =>
+                        widget.filteredData.any((filteredItem) =>
+                        item['location'] == filteredItem['location']
+                        )
+                    ).toList();
 
-                return ListView(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                    ),
-                    Center(
-                      child: Text(
-                        'Daily Average',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[700],
+                    return ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
                         ),
-                      ),
-                    ),
-                    // Show only 'PM2.5' and 'PM10' data in the first tab
-                    for (var average in widget.filteredData)
-                      if (average['pm25'] != null && average['pm10'] != null)
-                        Card(
-                          margin: EdgeInsets.all(10),
-                          elevation: 5,
-                          child: ListTile(
-                            title: Text(
-                              'Time: ${average['timestamp']}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                SizedBox(height: 5),
-                                Text('PM2.5: ${average['pm25']} µg/m³'),
-                                SizedBox(height: 5),
-                                Text('Remarks: ${average['pm25remarks']}'),
-                                SizedBox(height: 5),
-                                Text('PM10: ${average['pm10']} µg/m³'),
-                                SizedBox(height: 5),
-                                Text('Remarks: ${average['pm10remarks']}'),
-                              ],
+                        Center(
+                          child: Text(
+                            'Daily Average',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              }
-              // Display loading indicator while fetching data
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
-          // PM2.5 tab
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: pmData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<Map<String, dynamic>> data = snapshot.data!;
-                List<Map<String, dynamic>> filteredData = data.where((item) =>
-                    widget.filteredData.any((filteredItem) =>
-                    item['location'] == filteredItem['location']
-                    )
-                ).toList();
-
-                return ListView(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                    ),
-                    Center(
-                      child: Text(
-                        'Particulate Matter (PM) 2.5:',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[700],
-                        ),
-                      ),
-                    ),
-                    // Show only 'PM2.5' data in the second tab
-                    for (var pm25Data in filteredData)
-                      if (pm25Data['pm25'] != null)
-                        Card(
-                          margin: EdgeInsets.all(10),
-                          elevation: 5,
-                          child: ListTile(
-                            title: Text(
-                              'Data: ${pm25Data['pm25']} µg/m³',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                        // Show only 'PM2.5' and 'PM10' data in the first tab
+                        for (var average in widget.filteredData)
+                          if (average['pm25'] != null && average['pm10'] != null)
+                            Card(
+                              margin: EdgeInsets.all(10),
+                              elevation: 5,
+                              child: ListTile(
+                                title: Text(
+                                  'Time: ${average['timestamp']}',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(height: 5),
+                                    Text('PM2.5: ${average['pm25']} µg/m³'),
+                                    SizedBox(height: 5),
+                                    Text('Remarks: ${average['pm25remarks']}'),
+                                    SizedBox(height: 5),
+                                    Text('PM10: ${average['pm10']} µg/m³'),
+                                    SizedBox(height: 5),
+                                    Text('Remarks: ${average['pm10remarks']}'),
+                                  ],
+                                ),
                               ),
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Remarks: ${pm25Data['pm25remarks']}'),
-                                SizedBox(height: 5),
-                                Text('Time: ${pm25Data['timestamp']}'),
-                              ],
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  }
+                  // Display loading indicator while fetching data
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+              // PM2.5 tab
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: pmData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Map<String, dynamic>> data = snapshot.data!;
+                    List<Map<String, dynamic>> filteredData = data.where((item) =>
+                        widget.filteredData.any((filteredItem) =>
+                        item['location'] == filteredItem['location']
+                        )
+                    ).toList();
+
+                    return ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                        ),
+                        Center(
+                          child: Text(
+                            'Particulate Matter (PM) 2.5:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              }
-              // Display loading indicator while fetching data
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            },
-          ),
-          // PM10 tab
-          FutureBuilder<List<Map<String, dynamic>>>(
-            future: pmData,
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<Map<String, dynamic>> data = snapshot.data!;
-                List<Map<String, dynamic>> filteredData = data.where((item) =>
-                    widget.filteredData.any((filteredItem) =>
-                    item['location'] == filteredItem['location']
-                    )
-                ).toList();
-
-                return ListView(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10),
-                    ),
-                    Center(
-                      child: Text(
-                        'Particulate Matter (PM) 10:',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.green[700],
-                        ),
-                      ),
-                    ),
-                    // Show only 'PM10' data in the third tab
-                    for (var pm10Data in filteredData)
-                      if (pm10Data['pm10'] != null)
-                        Card(
-                          margin: EdgeInsets.all(10),
-                          elevation: 5,
-                          child: ListTile(
-                            title: Text(
-                              'Data: ${pm10Data['pm10']} µg/m³',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
+                        // Show only 'PM2.5' data in the second tab
+                        for (var pm25Data in filteredData)
+                          if (pm25Data['pm25'] != null)
+                            Card(
+                              margin: EdgeInsets.all(10),
+                              elevation: 5,
+                              child: ListTile(
+                                title: Text(
+                                  'Data: ${pm25Data['pm25']} µg/m³',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Remarks: ${pm25Data['pm25remarks']}'),
+                                    SizedBox(height: 5),
+                                    Text('Time: ${pm25Data['timestamp']}'),
+                                  ],
+                                ),
                               ),
                             ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text('Remarks: ${pm10Data['pm10remarks']}'),
-                                SizedBox(height: 5),
-                                Text('Time: ${pm10Data['timestamp']}'),
-                              ],
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  }
+                  // Display loading indicator while fetching data
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+              // PM10 tab
+              FutureBuilder<List<Map<String, dynamic>>>(
+                future: pmData,
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Map<String, dynamic>> data = snapshot.data!;
+                    List<Map<String, dynamic>> filteredData = data.where((item) =>
+                        widget.filteredData.any((filteredItem) =>
+                        item['location'] == filteredItem['location']
+                        )
+                    ).toList();
+
+                    return ListView(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10),
+                        ),
+                        Center(
+                          child: Text(
+                            'Particulate Matter (PM) 10:',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
                             ),
                           ),
                         ),
-                  ],
-                );
-              } else if (snapshot.hasError) {
-                return Center(
-                  child: Text('Error: ${snapshot.error}'),
-                );
-              }
-              // Display loading indicator while fetching data
-              return Center(
-                child: CircularProgressIndicator(),
-              );
-            },
+                        // Show only 'PM10' data in the third tab
+                        for (var pm10Data in filteredData)
+                          if (pm10Data['pm10'] != null)
+                            Card(
+                              margin: EdgeInsets.all(10),
+                              elevation: 5,
+                              child: ListTile(
+                                title: Text(
+                                  'Data: ${pm10Data['pm10']} µg/m³',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  ),
+                                ),
+                                subtitle: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text('Remarks: ${pm10Data['pm10remarks']}'),
+                                    SizedBox(height: 5),
+                                    Text('Time: ${pm10Data['timestamp']}'),
+                                  ],
+                                ),
+                              ),
+                            ),
+                      ],
+                    );
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text('Error: ${snapshot.error}'),
+                    );
+                  }
+                  // Display loading indicator while fetching data
+                  return Center(
+                    child: CircularProgressIndicator(),
+                  );
+                },
+              ),
+            ],
           ),
-        ],
-      ),
+      ]
+    ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.pop(context);

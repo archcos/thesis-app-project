@@ -7,7 +7,9 @@ class HistoryContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> latest24Records = pmData.sublist(0, 24);
+    List<Map<String, dynamic>> latest24Records = pmData.length >= 24
+        ? pmData.sublist(0, 24)
+        : pmData;
 
     return Container(
       constraints: BoxConstraints(

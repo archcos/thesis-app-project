@@ -21,38 +21,50 @@ class _PM10TabState extends State<PM10Tab> {
   late String selectedLocation = '';
   late Data auth = Data();
   late Map<String, dynamic> latestData = {};
+  bool _isMounted = false; // Add this flag
 
   @override
   void initState() {
     super.initState();
+    _isMounted = true;
     _fetchPMData();
+  }
+
+  @override
+  void dispose() {
+    _isMounted = false;
+    super.dispose();
   }
 
   void _fetchPMData() async {
     try {
       final data = await auth.fetchPMData();
-      setState(() {
-        pmData = List<Map<String, dynamic>>.from(data);
-        timestamps = pmData.map((item) => item['timestamp'] as String).toList();
-        isLoading = false;
+      if (_isMounted) {
+        setState(() {
+          pmData = List<Map<String, dynamic>>.from(data);
+          timestamps = pmData.map((item) => item['timestamp'] as String).toList();
+          isLoading = false;
 
-        // Sort data by id in descending order
-        pmData.sort((a, b) {
-          final idA = int.parse(a['id'].toString());
-          final idB = int.parse(b['id'].toString());
-          return idB.compareTo(idA);
+          // Sort data by id in descending order
+          pmData.sort((a, b) {
+            final idA = int.parse(a['id'].toString());
+            final idB = int.parse(b['id'].toString());
+            return idB.compareTo(idA);
+          });
+
+          // Set latest data
+          if (pmData.isNotEmpty) {
+            latestData = pmData.first;
+          }
         });
-
-        // Set latest data
-        if (pmData.isNotEmpty) {
-          latestData = pmData.first;
-        }
-      });
+      }
     } catch (e) {
       print('Error fetching PM data: $e');
-      setState(() {
-        isLoading = false;
-      });
+      if (_isMounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
