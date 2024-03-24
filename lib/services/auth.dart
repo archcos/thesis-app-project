@@ -115,7 +115,7 @@ class Data with ChangeNotifier {
 
   Future<List<Map<String, dynamic>>> fetchPMData() async {
     try {
-      String apiUrl = 'https://airqms-cdo.000webhostapp.com/getdata.php';
+      String apiUrl = 'https://aircheck-cso.000webhostapp.com/getdata.php';
       var response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
@@ -148,7 +148,7 @@ class Data with ChangeNotifier {
 
   Future<List<Map<String, dynamic>>> fetchAverage() async {
     try {
-      String apiUrl = 'https://airqms-cdo.000webhostapp.com/getaverage.php';
+      String apiUrl = 'https://aircheck-cso.000webhostapp.com/getaverage.php';
       var response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {
