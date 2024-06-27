@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../colors.dart';
+
 class HistoryContainer extends StatelessWidget {
   final List<Map<String, dynamic>> pmData;
 
@@ -13,21 +15,24 @@ class HistoryContainer extends StatelessWidget {
 
     return Container(
       constraints: BoxConstraints(
-        maxHeight: 280,
         maxWidth: 300,
+        maxHeight: 600,
       ),
       decoration: BoxDecoration(
-        color: Colors.green[700],
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(30.0),
-          topRight: Radius.circular(30.0),
-        ),
+          image: DecorationImage(
+            image: AssetImage('assets/historybg.jpg'), // Replace with your actual image path
+            fit: BoxFit.cover, // Adjust how the image is fitted within the box
+          ),
+        borderRadius: BorderRadius.circular(20),
+          border: Border.all(
+            color: Colors.white, // Specify the color of the border
+            width: 2.0,) //
       ),
       child: Column(
         children: [
           SizedBox(height: 8),
           Text(
-            'History',
+            'Recorded Data',
             style: TextStyle(
               color: Colors.white,
               fontSize: 18,
@@ -86,7 +91,7 @@ class HistoryContainer extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        'Remarks',
+                        'Location',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -104,12 +109,18 @@ class HistoryContainer extends StatelessWidget {
               itemCount: latest24Records.length,
               itemBuilder: (BuildContext context, int index) {
                 var pmEntry = latest24Records[index];
+                String remarks = pmEntry['pm25remarks'] ?? '';
+                Color color = getColorForRemarks(remarks);
+
                 return Container(
                   margin: EdgeInsets.symmetric(vertical: 5),
-                  padding: EdgeInsets.all(10),
+                  padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
-                    color: Colors.green[700],
+                    color: getColorForRemarks(remarks),
                     borderRadius: BorderRadius.circular(2),
+                      border: Border.all(
+                        color: Colors.white, // Specify the color of the border
+                        width: 1.0,)
                   ),
                   child: ListTile(
                     subtitle: Row(
@@ -120,7 +131,7 @@ class HistoryContainer extends StatelessWidget {
                             child: Text(
                               '${pmEntry['timestamp']}',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -141,7 +152,7 @@ class HistoryContainer extends StatelessWidget {
                               height: 40,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.white,
+                                color: color,
                               ),
                               child: Center(
                                 child: Text(
@@ -166,9 +177,9 @@ class HistoryContainer extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              '${pmEntry['pm25remarks']}',
+                              '${pmEntry['location']}',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -186,14 +197,4 @@ class HistoryContainer extends StatelessWidget {
       ),
     );
   }
-}
-
-void main() {
-  runApp(
-    MaterialApp(
-      home: Scaffold(
-        body: HistoryContainer(pmData: []),
-      ),
-    ),
-  );
 }

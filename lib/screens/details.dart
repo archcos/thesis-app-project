@@ -26,7 +26,7 @@ class _DetailsPageState extends State<DetailsPage>
 
   Future<List<Map<String, dynamic>>> fetchPMData() async {
     try {
-      String apiUrl = 'https://airqms-cdo.000webhostapp.com/getdata.php';
+      String apiUrl = 'https://aircheck-cso.000webhostapp.com/aircheck/getdata.php';
       var response = await http.get(Uri.parse(apiUrl));
 
       if (response.statusCode == 200) {

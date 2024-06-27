@@ -5,9 +5,30 @@ class PM10History extends StatelessWidget {
 
   PM10History({required this.pmData});
 
+  Color _getColorForPM25(String remarks) {
+    switch (remarks) {
+      case 'Good':
+        return Colors.green;
+      case 'Fair':
+        return Colors.yellow;
+      case 'Unhealthy':
+        return Colors.orange;
+      case 'Very Unhealthy':
+        return Colors.red;
+      case 'Severely Unhealthy':
+        return Colors.purple;
+      case 'Emergency':
+        return Color(0xFF800000);
+      default:
+        return Colors.white;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> latest24Records = pmData.sublist(0, 24);
+    List<Map<String, dynamic>> latest24Records = pmData.length >= 24
+        ? pmData.sublist(0, 24)
+        : pmData;
 
     return Container(
       constraints: BoxConstraints(
@@ -55,6 +76,11 @@ class PM10History extends StatelessWidget {
                       ),
                     ),
                   ),
+                  VerticalDivider(
+                    color: Colors.white, // Adjust color as needed
+                    thickness: 2,
+                    width: 1,
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Align(
@@ -69,12 +95,17 @@ class PM10History extends StatelessWidget {
                       ),
                     ),
                   ),
+                  VerticalDivider(
+                    color: Colors.white, // Adjust color as needed
+                    thickness: 1,
+                    width: 1,
+                  ),
                   SizedBox(width: 8),
                   Expanded(
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        'Remarks',
+                        'Location',
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 15,
@@ -92,6 +123,8 @@ class PM10History extends StatelessWidget {
               itemCount: latest24Records.length,
               itemBuilder: (BuildContext context, int index) {
                 var pmEntry = latest24Records[index];
+                String remarks = pmEntry['pm10remarks'] ?? '';
+                Color color = _getColorForPM25(remarks);
                 return Container(
                   margin: EdgeInsets.symmetric(vertical: 5),
                   padding: EdgeInsets.all(10),
@@ -115,6 +148,11 @@ class PM10History extends StatelessWidget {
                             ),
                           ),
                         ),
+                        VerticalDivider(
+                          color: Colors.white, // Adjust color as needed
+                          thickness: 1,
+                          width: 1,
+                        ),
                         SizedBox(width: 8),
                         Expanded(
                           child: Align(
@@ -124,7 +162,7 @@ class PM10History extends StatelessWidget {
                               height: 40,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
-                                color: Colors.white,
+                                color: color,
                               ),
                               child: Center(
                                 child: Text(
@@ -139,12 +177,17 @@ class PM10History extends StatelessWidget {
                             ),
                           ),
                         ),
+                        VerticalDivider(
+                          color: Colors.white, // Adjust color as needed
+                          thickness: 1,
+                          width: 1,
+                        ),
                         SizedBox(width: 8),
                         Expanded(
                           child: Align(
                             alignment: Alignment.centerRight,
                             child: Text(
-                              '${pmEntry['pm10remarks']}',
+                              '${pmEntry['location']}',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,

@@ -1,13 +1,57 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-class RadialGaugeWidget extends StatelessWidget {
+class RadialGaugeWidget extends StatefulWidget {
   final double pmValue;
   final String pmRemarks;
 
+  const RadialGaugeWidget({Key? key, required this.pmValue, required this.pmRemarks})
+      : super(key: key);
 
-  RadialGaugeWidget({required this.pmValue, required this.pmRemarks});
+  @override
+  _RadialGaugeWidgetState createState() => _RadialGaugeWidgetState();
+}
 
+class _RadialGaugeWidgetState extends State<RadialGaugeWidget> {
+  late double _pmValue;
+  late String _pmRemarks;
+
+  Color _getColorForRemarks(String remarks) {
+    switch (remarks) {
+      case 'Good':
+        return Colors.green;
+      case 'Fair':
+        return Colors.yellow;
+      case 'Unhealthy':
+        return Colors.orange;
+      case 'Very Unhealthy':
+        return Colors.red;
+      case 'Severely Unhealthy':
+        return Colors.purple;
+      case 'Emergency':
+        return Color(0xFF800000);
+      default:
+        return Colors.white;
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _pmValue = widget.pmValue;
+    _pmRemarks = widget.pmRemarks;
+  }
+
+  @override
+  void didUpdateWidget(covariant RadialGaugeWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.pmValue != _pmValue || widget.pmRemarks != _pmRemarks) {
+      setState(() {
+        _pmValue = widget.pmValue;
+        _pmRemarks = widget.pmRemarks;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,7 +59,10 @@ class RadialGaugeWidget extends StatelessWidget {
       height: 220,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.green[700],
+        image: DecorationImage(
+          image: AssetImage('assets/cardbg.jpg'),
+          fit: BoxFit.cover,
+        ),
       ),
       child: Center(
         child: Stack(
@@ -37,7 +84,7 @@ class RadialGaugeWidget extends StatelessWidget {
                   ),
                   pointers: <GaugePointer>[
                     NeedlePointer(
-                      value: pmValue,
+                      value: _pmValue,
                       needleLength: 0.8,
                       lengthUnit: GaugeSizeUnit.factor,
                       needleColor: Colors.black,
@@ -109,14 +156,14 @@ class RadialGaugeWidget extends StatelessWidget {
                       bottomLeft: Radius.circular(8),
                       bottomRight: Radius.circular(8),
                     ),
-                    color: Colors.white,
+                    color: _getColorForRemarks(_pmRemarks),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       SizedBox(height: 5),
                       Text(
-                        pmValue.toString(),
+                        _pmValue.toString(),
                         style: TextStyle(
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -143,11 +190,11 @@ class RadialGaugeWidget extends StatelessWidget {
               right: 0,
               child: Center(
                 child: Text(
-                  pmRemarks,
+                  _pmRemarks,
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),

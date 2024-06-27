@@ -55,6 +55,7 @@ flutter:
     - assets/help/help1.png
     - assets/help/help2.png
     - assets/help/help3.png
+    - assets/historybg.jpg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

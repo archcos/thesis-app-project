@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../../services/auth.dart';
 import '../circular.dart';
+import '../colors.dart';
 import '../info25.dart';
 import 'Helper.dart';
 import 'history_container.dart';
@@ -119,6 +120,7 @@ class _DashboardState extends State<Dashboard> {
     return pmData[index]['pm10remarks'] ?? '';
   }
 
+
   void _onItemTapped(int index) {
     if (_isMounted && _selectedIndex != index) {
       _pageController.animateToPage(
@@ -195,9 +197,8 @@ class _DashboardState extends State<Dashboard> {
                   child: CircularProgressWithDuration(
                       duration: Duration(seconds: 5)),
                 ),
-                Image.asset(
-                  'assets/bg.jpg',
-                  fit: BoxFit.cover,
+                Container(
+                  color: getColorForRemarks(latestData['pm25remarks'] ?? ''),
                   width: double.infinity,
                   height: double.infinity,
                 ),
@@ -350,9 +351,9 @@ class _DashboardState extends State<Dashboard> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: Colors.white,
+        selectedItemColor: getColorForRemarks(latestData['pm25remarks'] ?? ''),
         onTap: _onItemTapped,
-        backgroundColor: Colors.green[600],
+        backgroundColor: Colors.white,
       ),
     );
   }

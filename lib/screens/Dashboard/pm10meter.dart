@@ -8,6 +8,25 @@ class RadialGaugeWidget1 extends StatelessWidget {
 
   RadialGaugeWidget1({required this.pmValue, required this.pmRemarks});
 
+  Color _getColorForRemarks(String remarks) {
+    switch (remarks) {
+      case 'Good':
+        return Colors.green;
+      case 'Fair':
+        return Colors.yellow;
+      case 'Unhealthy':
+        return Colors.orange;
+      case 'Very Unhealthy':
+        return Colors.red;
+      case 'Severely Unhealthy':
+        return Colors.purple;
+      case 'Emergency':
+        return Color(0xFF800000);
+      default:
+        return Colors.white;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -15,7 +34,10 @@ class RadialGaugeWidget1 extends StatelessWidget {
       height: 220,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        color: Colors.green[700],
+        image: DecorationImage(
+          image: AssetImage('assets/cardbg.jpg'),
+          fit: BoxFit.cover,
+        ),
       ),
       child: Center(
         child: Stack(
@@ -109,7 +131,7 @@ class RadialGaugeWidget1 extends StatelessWidget {
                       bottomLeft: Radius.circular(8),
                       bottomRight: Radius.circular(8),
                     ),
-                    color: Colors.white,
+                    color: _getColorForRemarks(pmRemarks),
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -147,7 +169,7 @@ class RadialGaugeWidget1 extends StatelessWidget {
                   style: TextStyle(
                     fontSize: 25,
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
+                    color: Colors.black,
                   ),
                   textAlign: TextAlign.center,
                 ),
