@@ -123,7 +123,7 @@ class _RadialGaugeWidgetState extends State<RadialGaugeWidget> {
                       color: Colors.purple,
                     ),
                     GaugeRange(
-                      startValue: 91,
+                      startValue: 90.1,
                       endValue: 100,
                       color: Color(0xFF934B50),
                     ),
@@ -192,7 +192,7 @@ class _RadialGaugeWidgetState extends State<RadialGaugeWidget> {
                 child: Text(
                   _pmRemarks,
                   style: TextStyle(
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                   ),

@@ -56,6 +56,13 @@ flutter:
     - assets/help/help2.png
     - assets/help/help3.png
     - assets/historybg.jpg
+    - assets/icons/good.png
+    - assets/icons/fair.png
+    - assets/icons/unhealthy.png
+    - assets/icons/vunhealthy.png
+    - assets/icons/sunhealthy.png
+    - assets/icons/emergency.png
+
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

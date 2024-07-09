@@ -10,9 +10,9 @@ class LocationCard extends StatelessWidget {
   final Map<String, String> remarkImages = {
     'Good': 'assets/colors/green.png',
     'Fair': 'assets/colors/yellow.png',
-    'Unhealthy': 'assets/colors/red.png',
-    'Very Unhealthy': 'assets/colors/orange.png',
-    'Acutely Unhealthy': 'assets/colors/purple.png',
+    'Unhealthy': 'assets/colors/orange.png',
+    'Very Unhealthy': 'assets/colors/red.png',
+    'Severely Unhealthy': 'assets/colors/purple.png',
     'Emergency': 'assets/colors/maroon.png',
   };
 
@@ -54,126 +54,126 @@ class LocationCard extends StatelessWidget {
             decoration: BoxDecoration(
               color: Colors.transparent,
             ),
-              child: Container(
-                padding: const EdgeInsets.all(12.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    SizedBox(height: 8),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        Expanded(
-                          child: Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              ClipOval(
-                                child: Image.asset(
-                                  backgroundImagePath, // Provide the URL or path to your image
-                                  width: 90,
-                                  height: 90,
-                                  fit: BoxFit.cover,
+            child: Container(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Expanded(
+                        child: Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            ClipOval(
+                              child: Image.asset(
+                                backgroundImagePath,
+                                width: 90,
+                                height: 90,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                locationData.isNotEmpty
+                                    ? (locationData.first['location'] as String).split(' ')[0]
+                                    : '',
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              Center(
-                                child: Text(
-                                  locationData.isNotEmpty
-                                      ? (locationData.first['location'] as String).split(' ')[0]
-                                      : '',
+                            ),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.access_time,
+                                  color: Colors.black,
+                                  size: 16,
+                                ),
+                                SizedBox(width: 8),
+                                Text(
+                                  '${latestData['timestamp'] != null ? DateFormat('yyyy-MM-dd').format(DateTime.parse(latestData['timestamp'])) : 'N/A'}',
                                   style: TextStyle(
+                                    fontWeight: FontWeight.w900,
                                     color: Colors.black,
                                     fontSize: 16,
-                                    fontWeight: FontWeight.bold,
                                   ),
                                 ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
+                              ],
+                            ),
+                            SizedBox(height: 8),
+                            Text.rich(
+                              TextSpan(
                                 children: [
-                                  Icon(
-                                    Icons.access_time, // Choose the appropriate icon
-                                    color: Colors.black,
-                                    size: 16,
-                                  ),
-                                  SizedBox(width: 8), // Adjust the spacing between the icon and text
-                                  Text(
-                                    '${latestData['timestamp'] != null ? DateFormat('yyyy-MM-dd').format(DateTime.parse(latestData['timestamp'])) : 'N/A'}',
+                                  TextSpan(
+                                    text: 'PM2.5: ',
                                     style: TextStyle(
-                                      fontWeight: FontWeight.w900,
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: '${latestData['pm25'] ?? 'N/A '} µg/m³',
+                                    style: TextStyle(
                                       color: Colors.black,
                                       fontSize: 16,
                                     ),
                                   ),
                                 ],
                               ),
-                              SizedBox(height: 8),
-                              Text.rich(
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'PM2.5: ',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold, // Set the fontWeight to bold
-                                      ),
+                            ),
+                            Text.rich(
+                              TextSpan(
+                                children: [
+                                  TextSpan(
+                                    text: 'PM10: ',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
                                     ),
-                                    TextSpan(
-                                      text: '${latestData['pm25'] ?? 'N/A '} µg/m³',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                      ),
+                                  ),
+                                  TextSpan(
+                                    text: '${latestData['pm10'] ?? 'N/A '} µg/m³',
+                                    style: TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 16,
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
-                              Text.rich(
-                                TextSpan(
-                                  children: [
-                                    TextSpan(
-                                      text: 'PM10: ',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold, // Set the fontWeight to bold
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: '${latestData['pm10'] ?? 'N/A '} µg/m³',
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                    Text(
-                      'See More',
-                      style: TextStyle(
-                        color: Colors.blue,
-                        fontSize: 16,
                       ),
+                    ],
+                  ),
+                  Text(
+                    'See More',
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 16,
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
           ),
         ),
+      ),
     );
   }
 }
@@ -182,41 +182,42 @@ class LocationTab extends StatefulWidget {
   @override
   _LocationTabState createState() => _LocationTabState();
 }
+
 class _LocationTabState extends State<LocationTab> {
   final storage = FlutterSecureStorage();
   late bool isLoading = true;
 
-  late List<Map<String, dynamic>> averageData = [];
+  late List<Map<String, dynamic>> pmData = []; // Updated variable name
   late Data auth = Data();
   late Map<String, List<Map<String, dynamic>>> locationGroupedData = {};
 
   @override
   void initState() {
     super.initState();
-    _fetchAverage();
+    _fetchPMData(); // Updated function call
   }
 
-  void _fetchAverage() async {
+  void _fetchPMData() async { // Updated function name
     try {
-      final data = await auth.fetchAverage();
+      final data = await auth.fetchPMData(); // Updated function call
 
       // Check if the widget is still mounted before calling setState
       if (mounted) {
         setState(() {
-          averageData = List<Map<String, dynamic>>.from(data);
+          pmData = List<Map<String, dynamic>>.from(data);
           isLoading = false;
 
-          averageData.sort((a, b) {
+          pmData.sort((a, b) {
             final timestampA = DateTime.parse(a['timestamp']);
             final timestampB = DateTime.parse(b['timestamp']);
             return timestampB.compareTo(timestampA);
           });
 
-          locationGroupedData = groupDataByLocation(averageData);
+          locationGroupedData = groupDataByLocation(pmData); // Updated variable name
         });
       }
     } catch (e) {
-      print('Error fetching Average data: $e');
+      print('Error fetching PM data: $e');
 
       // Check if the widget is still mounted before calling setState
       if (mounted) {
@@ -245,12 +246,13 @@ class _LocationTabState extends State<LocationTab> {
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
           Image.asset(
-            'assets/bg.jpg',
+            'assets/historybg.jpg',
             fit: BoxFit.cover,
             width: double.infinity,
             height: double.infinity,

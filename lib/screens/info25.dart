@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'colors.dart';
+
 class Info25Page extends StatelessWidget {
   final List filteredData;
 
@@ -8,6 +10,7 @@ class Info25Page extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
+    var remarks = filteredData[0];
 
     return Scaffold(
       appBar: AppBar(
@@ -18,7 +21,7 @@ class Info25Page extends StatelessWidget {
             fontStyle: FontStyle.italic,
           ),
         ),
-        backgroundColor: Colors.green[600],
+        backgroundColor:  getColorForRemarks(remarks['pm25remarks'] ?? ''),
         elevation: 0,
         automaticallyImplyLeading: false,
       ),
@@ -82,6 +85,42 @@ class Info25Page extends StatelessWidget {
                 height: screenHeight * 0.9, // Adjust the multiplier as needed
                 child: Image.asset(
                   'assets/index.jpg',  // Replace 'assets/index.jpg' with the actual path of your image
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+            SizedBox(height: 5),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: RichText(
+                textAlign: TextAlign.justify,
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: '\n\nPM10 ',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    TextSpan(
+                      text:
+                      'particles have sizes of 10 micrometers or less, making them inhalable. It also comes from industrial sources, wind-blown dust from open areas, pollen, pieces of bacteria, dust from construction sites, landfills, and farms, as well as wildfires and brush/waste burning. The surfaces of the bigger airways in the upper part of the lung are more likely to become coated in PM10. Particles that land on the lungs surface have the potential to cause inflammation and tissue damage.',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Center(
+              child: Container(
+                height: screenHeight * 0.9, // Adjust the multiplier as needed
+                child: Image.asset(
+                  'assets/index1.jpg',  // Replace 'assets/index.jpg' with the actual path of your image
                   fit: BoxFit.cover,
                 ),
               ),

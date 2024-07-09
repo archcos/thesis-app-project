@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
 
 class Data with ChangeNotifier {
   Timer? _timer;
@@ -112,11 +113,20 @@ class Data with ChangeNotifier {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-
   Future<List<Map<String, dynamic>>> fetchPMData() async {
     try {
-      String apiUrl = 'https://aircheck-cso.000webhostapp.com/aircheck/getdata.php';
-      var response = await http.get(Uri.parse(apiUrl));
+      String apiUrl = 'https://phlhxvertmsqskgofbug.supabase.co/rest/v1/tblparticulate_matter';
+      String apiKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBobGh4dmVydG1zcXNrZ29mYnVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk5OTgyMjMsImV4cCI6MjAzNTU3NDIyM30.K-byE_UrblXBVqxyqvwSN_LVlOuyBi2b3XruZaAV6P8';
+
+      var response = await http.get(
+        Uri.parse(apiUrl),
+        headers: {
+          'apikey': apiKey,
+          'Authorization': 'Bearer $apiKey',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
 
       if (response.statusCode == 200) {
         final dynamic decodedJson = jsonDecode(response.body);
@@ -125,61 +135,26 @@ class Data with ChangeNotifier {
           List<Map<String, dynamic>> data =
           decodedJson.cast<Map<String, dynamic>>();
 
-          // Convert relevant string values to double
+
+          // Convert relevant string values to double and format timestamp
+          final DateFormat formatter = DateFormat("yyyy-MM-dd HH:mm:ss");
           data.forEach((item) {
             item['pm25'] = double.tryParse(item['pm25']?.toString() ?? '0.0') ?? 0.0;
             item['pm10'] = double.tryParse(item['pm10']?.toString() ?? '0.0') ?? 0.0;
           });
 
-          print(data);
+          print('Fetched data: $data');
 
           return data;
         } else {
           throw Exception('Invalid JSON format or null response');
         }
       } else {
-        throw Exception(
-            'Failed to load PM data. Status code: ${response.statusCode}');
+        throw Exception('Failed to load PM data. Status code: ${response.statusCode}');
       }
     } catch (e) {
       throw Exception('Failed to fetch PM data: $e');
     }
   }
 
-  Future<List<Map<String, dynamic>>> fetchAverage() async {
-    try {
-      String apiUrl = 'https://aircheck-cso.000webhostapp.com/getaverage.php';
-      var response = await http.get(Uri.parse(apiUrl));
-
-      if (response.statusCode == 200) {
-        final dynamic decodedJson = jsonDecode(response.body);
-
-        if (decodedJson != null && decodedJson is List) {
-          List<Map<String, dynamic>> average =
-          decodedJson.cast<Map<String, dynamic>>();
-
-          // Convert relevant string values to double
-          average.forEach((item) {
-            item['pm25_average'] =
-                double.tryParse(item['pm25_average']?.toString() ?? '0.0') ??
-                    0.0;
-            item['pm10_average'] =
-                double.tryParse(item['pm10_average']?.toString() ?? '0.0') ??
-                    0.0;
-          });
-
-          print(average);
-
-          return average;
-        } else {
-          throw Exception('Invalid JSON format or null response');
-        }
-      } else {
-        throw Exception(
-            'Failed to load PM data. Status code: ${response.statusCode}');
-      }
-    } catch (e) {
-      throw Exception('Failed to fetch PM data: $e');
-    }
-  }
 }

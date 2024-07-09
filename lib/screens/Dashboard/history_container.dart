@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../colors.dart';
 
@@ -9,9 +10,13 @@ class HistoryContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> latest24Records = pmData.length >= 24
-        ? pmData.sublist(0, 24)
-        : pmData;
+    // Reverse the list to start from the most recent data
+    List<Map<String, dynamic>> reversedData = List.from(pmData.reversed);
+    List<Map<String, dynamic>> latest24Records = reversedData.length >= 24
+        ? reversedData.sublist(0, 24)
+        : reversedData;
+
+    var test = latest24Records.isNotEmpty ? latest24Records[0] : {};
 
     return Container(
       constraints: BoxConstraints(
@@ -19,14 +24,15 @@ class HistoryContainer extends StatelessWidget {
         maxHeight: 600,
       ),
       decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/historybg.jpg'), // Replace with your actual image path
-            fit: BoxFit.cover, // Adjust how the image is fitted within the box
-          ),
+        image: DecorationImage(
+          image: AssetImage('assets/historybg.jpg'), // Replace with your actual image path
+          fit: BoxFit.cover, // Adjust how the image is fitted within the box
+        ),
         borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color: Colors.white, // Specify the color of the border
-            width: 2.0,) //
+        border: Border.all(
+          color: Colors.white, // Specify the color of the border
+          width: 2.0,
+        ),
       ),
       child: Column(
         children: [
@@ -43,8 +49,12 @@ class HistoryContainer extends StatelessWidget {
           Container(
             padding: EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.green[700],
-              borderRadius: BorderRadius.circular(2),
+              color: getColorForRemarks(test['pm25remarks']), // Outer container transparent to show inner container
+              borderRadius: BorderRadius.circular(2.0), // Outer border radius slightly larger
+              border: Border.all(
+                color: Colors.white, // Outer border color
+                width: 2.0, // Outer border width
+              ),
             ),
             child: ListTile(
               title: Row(
@@ -53,10 +63,10 @@ class HistoryContainer extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        'Date',
+                        'DATE',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -72,12 +82,13 @@ class HistoryContainer extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.center,
                       child: Text(
-                        'Particulate Matter',
+                        'PARTICULATE\nMATTER',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 13,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                   ),
@@ -91,10 +102,10 @@ class HistoryContainer extends StatelessWidget {
                     child: Align(
                       alignment: Alignment.centerRight,
                       child: Text(
-                        'Location',
+                        'LOCATION',
                         style: TextStyle(
                           color: Colors.white,
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -112,15 +123,20 @@ class HistoryContainer extends StatelessWidget {
                 String remarks = pmEntry['pm25remarks'] ?? '';
                 Color color = getColorForRemarks(remarks);
 
+                // Format the timestamp
+                final DateFormat formatter = DateFormat("MM-dd-yyyy \nhh:mm a");
+                String formattedTimestamp = formatter.format(DateTime.parse(pmEntry['timestamp']));
+
                 return Container(
                   margin: EdgeInsets.symmetric(vertical: 5),
                   padding: EdgeInsets.all(5),
                   decoration: BoxDecoration(
                     color: getColorForRemarks(remarks),
                     borderRadius: BorderRadius.circular(2),
-                      border: Border.all(
-                        color: Colors.white, // Specify the color of the border
-                        width: 1.0,)
+                    border: Border.all(
+                      color: Colors.white, // Specify the color of the border
+                      width: 1.0,
+                    ),
                   ),
                   child: ListTile(
                     subtitle: Row(
@@ -129,10 +145,10 @@ class HistoryContainer extends StatelessWidget {
                           child: Align(
                             alignment: Alignment.centerLeft,
                             child: Text(
-                              '${pmEntry['timestamp']}',
+                              formattedTimestamp,
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
@@ -159,7 +175,7 @@ class HistoryContainer extends StatelessWidget {
                                   '${pmEntry['pm25']}',
                                   style: TextStyle(
                                     color: Colors.black,
-                                    fontSize: 15,
+                                    fontSize: 13,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -180,7 +196,7 @@ class HistoryContainer extends StatelessWidget {
                               '${pmEntry['location']}',
                               style: TextStyle(
                                 color: Colors.black,
-                                fontSize: 16,
+                                fontSize: 13,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'Dashboard/Help.dart';
 import 'Dashboard/dashboard.dart';
 
 class LandingPage extends StatelessWidget {
@@ -156,30 +155,18 @@ class LandingPage extends StatelessWidget {
   // Function to request notification permissions
   void _requestNotificationPermissions(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool showHelpPage = prefs.getBool('showHelpPage') ?? true;
+
 
     PermissionStatus status = await Permission.notification.request();
 
     if (status.isGranted) {
-      // Notification permissions granted
-      if (showHelpPage) {
-        // If the help page should be shown, navigate to it and set the flag to false
-        Navigator.of(context).push(
-          MaterialPageRoute(
-            builder: (context) {
-              prefs.setBool('showHelpPage', false);
-              return Help();
-            },
-          ),
-        );
-      } else {
+
         // If the help page should not be shown, navigate to the Dashboard class
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => Dashboard(),
           ),
         );
-      }
     } else {
       // Handle the case where the user denies permission
       showDialog(
@@ -187,15 +174,12 @@ class LandingPage extends StatelessWidget {
         builder: (BuildContext context) {
           return AlertDialog(
             title: Text('Notification Permission Denied'),
-            // ... (your existing code)
+
           );
         },
+
       );
     }
   }
 
-  // Function to open app settings
-  void _openAppSettings() {
-    openAppSettings();
-  }
 }

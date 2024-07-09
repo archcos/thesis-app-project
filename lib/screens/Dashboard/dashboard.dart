@@ -5,11 +5,9 @@ import '../../services/auth.dart';
 import '../circular.dart';
 import '../colors.dart';
 import '../info25.dart';
-import 'Helper.dart';
 import 'history_container.dart';
 import 'location.dart';
 import 'meter.dart';
-import 'pm10tab.dart';
 import 'package:intl/intl.dart';
 
 class Dashboard extends StatefulWidget {
@@ -73,14 +71,15 @@ class _DashboardState extends State<Dashboard> {
 
           // Sort data by id in descending order
           pmData.sort((a, b) {
-            final idA = int.parse(a['id'].toString());
-            final idB = int.parse(b['id'].toString());
+            final idA = int.tryParse(a['id'].toString()) ?? 0;
+            final idB = int.tryParse(b['id'].toString()) ?? 0;
             return idB.compareTo(idA);
           });
 
+
           // Set latest data
           if (pmData.isNotEmpty) {
-            latestData = pmData.first;
+            latestData = pmData.last;
           }
         });
       }
@@ -100,24 +99,24 @@ class _DashboardState extends State<Dashboard> {
     return formattedDate;
   }
 
-  String getLocation(int index) {
-    return pmData[index]['location'] ?? '';
-  }
 
-  double getPM25(int index) {
-    return (pmData[index]['pm25'] ?? 0).toDouble();
-  }
-
-  String getpm25Remarks(int index) {
-    return pmData[index]['pm25remarks'] ?? '';
-  }
-
-  double getPM10(int index) {
-    return (pmData[index]['pm10'] ?? 0).toDouble();
-  }
-
-  String getpm10Remarks(int index) {
-    return pmData[index]['pm10remarks'] ?? '';
+  String _getImagePath(String pm25remarks) {
+    switch (pm25remarks) {
+      case 'Good':
+        return 'assets/icons/good.png';
+      case 'Fair':
+        return 'assets/icons/fair.png';
+      case 'Unhealthy':
+        return 'assets/icons/unhealthy.png';
+      case 'Very Unhealthy':
+        return 'assets/icons/vunhealthy.png';
+      case 'Severely Unhealthy':
+        return 'assets/icons/sunhealthy.png';
+      case 'Emergency':
+        return 'assets/icons/emergency.png';
+      default:
+        return 'assets/icons/good.png'; // Provide a default image if none of the above conditions match
+    }
   }
 
 
@@ -163,7 +162,7 @@ class _DashboardState extends State<Dashboard> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => Helper(),
+                  builder: (context) => Info25Page(filteredData: [latestData]),
                 ),
               );
             },
@@ -249,7 +248,7 @@ class _DashboardState extends State<Dashboard> {
                                         MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                            'Current Air Quality - PM2.5',
+                                            'Current Air Quality',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontSize: 20,
@@ -278,44 +277,158 @@ class _DashboardState extends State<Dashboard> {
                                       children: [
                                         Expanded(
                                           child: RadialGaugeWidget(
-                                            pmValue: getPM25(
-                                                filteredData.indexOf(
-                                                    item)),
-                                            pmRemarks: getpm25Remarks(
-                                                filteredData.indexOf(
-                                                    item)),
+                                            pmValue: latestData['pm25'],
+                                            pmRemarks: latestData['pm25remarks'],
                                           ),
                                         ),
                                       ],
                                     ),
                                     SizedBox(height: 8),
-                                    Center(
-                                      child: Text(
-                                        '$location',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.bold,
+                                    Container(
+                                      margin: EdgeInsets.only(top: 16.0),
+                                      padding: EdgeInsets.all(3.0), // Outer padding to create space for the double border
+                                      decoration: BoxDecoration(
+                                        color: Colors.transparent, // Outer container transparent to show inner container
+                                        borderRadius: BorderRadius.circular(12.0), // Outer border radius slightly larger
+                                        border: Border.all(
+                                          color: Colors.white, // Outer border color
+                                          width: 2.0, // Outer border width
                                         ),
                                       ),
-                                    ),
-                                    Center(
-                                      child: TextButton(
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    Info25Page(
-                                                        filteredData: [
-                                                          latestData
-                                                        ])),
-                                          );
-                                        },
-                                        child: const Text(
-                                            'See More Information'),
+                                      child: Container(
+                                        padding: EdgeInsets.all(4.0), // Inner padding for content
+                                        decoration: BoxDecoration(
+                                          color: Colors.white.withOpacity(0.8),
+                                          borderRadius: BorderRadius.circular(10.0), // Inner border radius
+                                          border: Border.all(
+                                            color: Colors.white, // Inner border color
+                                            width: 2.0, // Inner border width
+                                          ),
+                                        ),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center, // Centers all columns within the row
+                                            children: [
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center, // Centers content within the column
+                                                  children: [
+                                                    Center(
+                                                      child: Image.asset(
+                                                        _getImagePath(latestData['pm25remarks']),
+                                                        width: 50,
+                                                        height: 50,
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 8),
+                                                    Center(
+                                                      child: Row(
+                                                        mainAxisSize: MainAxisSize.min, // Ensures the row takes minimal space
+                                                        children: [
+                                                          Icon(
+                                                            Icons.location_on, // The location icon
+                                                            color: Colors.red, // Adjust the color of the icon if needed
+                                                          ),
+                                                          Text(
+                                                            location.contains(' ') ? '${location.split(' ')[0]}\n${location.split(' ').sublist(1).join(' ')}' : location,
+                                                            style: TextStyle(
+                                                              color: Colors.black,
+                                                              fontSize: 12,
+                                                              fontWeight: FontWeight.bold,
+                                                            ),
+                                                          )
+                                                        ],
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              SizedBox(width: 8),
+                                              Expanded(
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.start, // Centers content within the column
+                                                  children: [
+                                                    Text(
+                                                      'PM2.5: ${latestData['pm25']}',
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontStyle: FontStyle.italic,
+                                                        shadows: [
+                                                          Shadow(
+                                                            color: Colors.grey,
+                                                            blurRadius: 2,
+                                                            offset: Offset(1, 1),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    SizedBox(height: 20),
+                                                    Text(
+                                                      'PM10: ${latestData['pm10']}',
+                                                      style: TextStyle(
+                                                        color: Colors.black,
+                                                        fontSize: 14,
+                                                        fontWeight: FontWeight.bold,
+                                                        fontStyle: FontStyle.italic,
+                                                        shadows: [
+                                                          Shadow(
+                                                            color: Colors.grey,
+                                                            blurRadius: 2,
+                                                            offset: Offset(1, 1),
+                                                          ),
+                                                        ],
+                                                      ),// Adjust text color
+                                                    ),
+                                                  ],
+                                                ),
+                                              ), Expanded(
+                                                child: Center(
+                                                child: Column(
+                                                  mainAxisAlignment: MainAxisAlignment.center, // Centers content within the column
+                                                  children: [
+                                                    RichText(
+                                                      textAlign: TextAlign.center,
+                                                      text: TextSpan(
+                                                        style: TextStyle(color: Colors.black),
+                                                        children: [
+                                                          TextSpan(
+                                                            text: 'Air Quality Index \n',
+                                                            style: TextStyle(
+                                                                fontSize: 15,
+                                                                fontWeight: FontWeight.bold),
+                                                          ),
+                                                          TextSpan(
+                                                            text: '${latestData['pm25remarks']}',
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.bold,
+                                                              color: getColorForRemarks(latestData['pm25remarks'] ?? ''),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder: (context) =>
+                                                                    Info25Page(filteredData: [latestData])),
+                                                          );
+                                                        },
+                                                        child: const Text('See More >'),
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                              ),
+                                            ],
+                                          )
+
                                       ),
                                     ),
+
                                   ],
                                 ),
                               ),
@@ -330,24 +443,18 @@ class _DashboardState extends State<Dashboard> {
             ),
             // Location Tab
             LocationTab(),
-            // PM10 Tab
-            PM10Tab(),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.air),
-            label: 'PM2.5',
+            icon: Icon(Icons.dashboard_rounded),
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.location_on),
             label: 'Locations',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.smoking_rooms),
-            label: 'PM10',
           ),
         ],
         currentIndex: _selectedIndex,
